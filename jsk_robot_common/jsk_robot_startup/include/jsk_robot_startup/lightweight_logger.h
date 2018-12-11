@@ -48,8 +48,7 @@
 #include <jsk_topic_tools/stealth_relay.h>
 #include <jsk_topic_tools/timered_diagnostic_updater.h>
 #include <jsk_topic_tools/vital_checker.h>
-#include <mongodb_store/message_store.h>
-
+#include <jsk_robot_startup/message_store_singleton.h>
 
 namespace jsk_robot_startup
 {

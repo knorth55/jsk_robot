@@ -59,9 +59,6 @@ namespace jsk_robot_startup
       pnh_->param("wait_for_insert", wait_for_insert_, false);
 
       pnh_->param("vital_check", vital_check_, true);
-      NODELET_INFO_STREAM("Connecting to database " << db_name << "/" << col_name << "...");
-      msg_store_.reset(new mongodb_store::MessageStoreProxy(*nh_, col_name, db_name));
-      NODELET_INFO_STREAM("Successfully connected to database!");
 
       input_topic_name_ = pnh_->resolveName("input", true);
 
@@ -112,8 +109,6 @@ namespace jsk_robot_startup
       jsk_topic_tools::StealthRelay::inputCallback(msg);
 
       if (!initialized_) return;
-      vital_checker_->poke();
-
       vital_checker_->poke();
 
       try
