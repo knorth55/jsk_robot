@@ -67,6 +67,10 @@ add_library(jsk_robot_lifelog SHARED
   ${${PROJECT_NAME}_LIFELOG_NODELET_SRCS}
   src/message_store_singleton.cpp)
 
+add_library(jsk_robot_lifelog SHARED
+  ${${PROJECT_NAME}_LIFELOG_NODELET_SRCS}
+  src/message_store_singleton.cpp)
+
 target_link_libraries(jsk_robot_lifelog
   ${Boost_LIBRARIES}
   ${OpenCV_LIBRARIES}
