@@ -160,6 +160,7 @@ namespace jsk_robot_startup
   } // lifelog
 } // jsk_robot_startup
 
+
 #include <pluginlib/class_list_macros.h>
 typedef jsk_robot_startup::lifelog::LightweightLogger LightweightLogger;
 PLUGINLIB_EXPORT_CLASS(LightweightLogger, nodelet::Nodelet)
