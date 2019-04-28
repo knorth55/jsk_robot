@@ -34,6 +34,19 @@
     <param name="autorepeat_rate" value="10" />
   </node>
 
+  <!-- ipega joystick -->
+  <node machine="c2" name="joy_ipega_node" pkg="joy" type="joy_node">
+    <remap from="joy" to="joy_ipega_org"/>
+    <param name="deadzone" value="0.12" />
+    <param name="dev" value="/etc/ros/sensors/ipegajoy" />
+    <param name="autorepeat_rate" value="10" />
+  </node>
+  <node name="joy_ipega_remap" pkg="joy" type="joy_remap.py">
+    <remap from="joy_in" to="joy_ipega_org"/>
+    <remap from="joy_out" to="joy_other"/>
+    <rosparam command="load" file="$(find jsk_pr2_startup)/jsk_pr2_joy/ipegajoy.yaml"/>
+  </node>
+
   <!-- Run stop auto restart -->
   <node name="pr2_run_stop_auto_restart" pkg="pr2_run_stop_auto_restart" type="run_stop_auto_restart" />
 
