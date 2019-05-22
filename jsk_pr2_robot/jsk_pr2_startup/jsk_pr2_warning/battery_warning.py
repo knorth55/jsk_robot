@@ -34,6 +34,8 @@ class BatteryWarning(object):
         self.warning_voltage = rospy.get_param("~warning_voltage", 14.0)
         self.critical_voltage = rospy.get_param("~critical_voltage", 13.7)
         self.warn_repeat_rate = rospy.get_param("~warn_repeat_rate", 180)
+        self.warning_voltage = rospy.get_param("~warning_voltage", 14.0)
+        self.critical_voltage = rospy.get_param("~critical_voltage", 13.7)
         self.log_rate = rospy.get_param("~log_rate", 10)
         self.log_path = rospy.get_param("~log_path", None)
 
