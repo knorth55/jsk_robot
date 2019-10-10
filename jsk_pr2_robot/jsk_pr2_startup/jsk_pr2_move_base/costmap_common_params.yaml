@@ -1,5 +1,5 @@
 robot_base_frame: base_footprint
-robot_radius: 0.5
+# robot_radius: 0.5  ## Ignored because footprint polygon is set.
 transform_tolerance: 1.0  # 0.2
 
 # parameters for static_layer
@@ -46,5 +46,5 @@ obstacle_layer:
 
 # parameters for inflation_layer
 inflation_layer:
-  inflation_radius: 0.30
-  cost_scaling_factor: 100.0
+  inflation_radius: 3.0
+  cost_scaling_factor: 3.0
