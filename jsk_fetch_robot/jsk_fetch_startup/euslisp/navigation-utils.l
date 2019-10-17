@@ -60,10 +60,8 @@
     (fetch-init))
   (dotimes (i 3)
     (setq *is-charging* (send (one-shot-subscribe "/battery_state" power_msgs::batterystate) :is_charging))
-    (if *is-charging*
-      (progn (undock)))
-    (unless *is-charging*
-      (return))
+    (when *is-charging* (undock))
+    (unless *is-charging* (return))
     (if (eq i 2) (progn (send *ri* :speak "Fail to undock") (ros::ros-error "Fail to undock"))))
   ;; go to spot
   (unless *spots*
