@@ -25,6 +25,9 @@
   <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen" 
         args="$(find pr2_controller_configuration)/pr2_calibration_controllers.yaml $(find pr2_controller_configuration)/pr2_joint_position_controllers.yaml"/>
 
+  <node name="pr2_calibration_warning"
+        pkg="jsk_pr2_startup" type="calibration_warning.py" />
+
   <!-- Controller Manager -->
   <include file="$(find pr2_controller_manager)/controller_manager.launch" />
 
@@ -51,8 +54,14 @@
     <param name="port3" type="string" value="/etc/ros/sensors/battery3" />
     <param name="debug_level" type="int" value="0" />
   </node>
-  <node pkg="power_monitor" type="power_monitor"  name="power_monitor" respawn="true"/>
-  
+  <node name="power_monitor"
+        pkg="power_monitor" type="power_monitor"
+        respawn="true" >
+    <rosparam>
+      frequency: 1.0
+    </rosparam>
+  </node>
+
   <!-- Base Laser -->
   <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
     <param name="port" type="string" value="/etc/ros/sensors/base_hokuyo" />
