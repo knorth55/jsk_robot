@@ -72,9 +72,7 @@
   </node>
 
   <!-- twitter -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" >
-      <arg name="remap_odom_state" value="odom_visual" />
-  </include>
+  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" />
 
   <!-- app manager -->
   <include file="$(find jsk_robot_startup)/lifelog/app_manager.launch">
