@@ -72,7 +72,9 @@
   </node>
 
   <!-- twitter -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" />
+  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" >
+      <arg name="remap_odom_state" value="odom_visual" />
+  </include>
 
   <!-- app manager -->
   <include file="$(find jsk_robot_startup)/lifelog/app_manager.launch">
@@ -96,7 +98,7 @@
   <!-- teleop -->
   <include file="$(find jsk_fetch_startup)/launch/fetch_teleop.xml"
            if="$(arg launch_teleop)" >
-      <arg name="odom_topic" value="/odom_combined" />
+      <arg name="odom_topic" value="/odom_visual" />
   </include>
 
   <!-- speech recognition -->
@@ -142,12 +144,12 @@
       <arg name="map_keepout_file" value="$(arg keepout_map_file)" />
       <arg name="use_keepout" value="true" />
 
-      <arg name="odom_topic" value="/odom_combined" />
+      <arg name="odom_topic" value="/odom_visual" />
     </include>
 
     <!-- robot localization ukf -->
     <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true">
-      <remap from="odometry/filtered" to="/odom_combined" />
+      <remap from="odometry/filtered" to="/odom_wheel" />
       <rosparam>
         frequency: 50
         sensor_timeout: 1.0
