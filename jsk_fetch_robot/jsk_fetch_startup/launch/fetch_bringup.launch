@@ -142,7 +142,7 @@
       <arg name="map_keepout_file" value="$(arg keepout_map_file)" />
       <arg name="use_keepout" value="true" />
 
-      <arg name="odom_topic" value="/odom_visual" />
+      <arg name="odom_topic" value="/odom_wheel" />
     </include>
 
     <!-- robot localization ukf -->
@@ -152,7 +152,7 @@
         frequency: 50
         sensor_timeout: 1.0
         two_d_mode: true
-        publish_tf: false
+        publish_tf: true
         publish_acceleration: false
         map_frame: map
         odom_frame: odom
