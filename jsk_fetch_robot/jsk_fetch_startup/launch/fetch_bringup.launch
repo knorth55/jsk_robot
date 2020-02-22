@@ -7,6 +7,7 @@
   <arg name="map_frame" default="eng2" />
   <arg name="map_file" default="$(find jsk_maps)/raw_maps/eng2-7f-0.05.yaml"/>
   <arg name="keepout_map_file" default="$(find jsk_maps)/raw_maps/eng2-7f-0.05_keepout.yaml" />
+  <arg name="use_visual_odom" default="false" />
 
   <param name="robot/type" value="fetch" />
   <param name="robot/name" command='bash -c "hostname | xargs echo -n"' />
@@ -72,7 +73,10 @@
   </node>
 
   <!-- twitter -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" />
+  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch">
+    <arg name="odom_topic" value="/odom_visual" if="$(arg use_visual_odom)" />
+    <arg name="odom_topic" value="/odom_wheel" unless="$(arg use_visual_odom)" />
+  </include>
 
   <!-- app manager -->
   <include file="$(find jsk_robot_startup)/lifelog/app_manager.launch">
@@ -96,7 +100,8 @@
   <!-- teleop -->
   <include file="$(find jsk_fetch_startup)/launch/fetch_teleop.xml"
            if="$(arg launch_teleop)" >
-      <arg name="odom_topic" value="/odom_visual" />
+    <arg name="odom_topic" value="/odom_visual" if="$(arg use_visual_odom)" />
+    <arg name="odom_topic" value="/odom_wheel" unless="$(arg use_visual_odom)" />
   </include>
 
   <!-- speech recognition -->
@@ -142,17 +147,45 @@
       <arg name="map_keepout_file" value="$(arg keepout_map_file)" />
       <arg name="use_keepout" value="true" />
 
-      <arg name="odom_topic" value="/odom_wheel" />
+      <arg name="odom_topic" value="/odom_visual" if="$(arg use_visual_odom)" />
+      <arg name="odom_topic" value="/odom_wheel" unless="$(arg use_visual_odom)" />
     </include>
 
     <!-- robot localization ukf -->
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true">
+    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true" >
       <remap from="odometry/filtered" to="/odom_wheel" />
-      <rosparam>
+      <rosparam unless="$(arg use_visual_odom)">
         frequency: 50
         sensor_timeout: 1.0
         two_d_mode: true
         publish_tf: true
+        publish_acceleration: false
+        map_frame: map
+        odom_frame: odom
+        base_link_frame: base_link
+        odom0: /odom_corrected
+        odom0_config: [true, true, false,
+                       false, false, true,
+                       true, true, false,
+                       false, false, true,
+                       false, false, false]
+        odom0_nodelay: true
+        odom0_differential: true
+        imu0: /imu_corrected
+        imu0_config: [false, false, false,
+                      false, false, true,
+                      false, false, false,
+                      false, false, true,
+                      true, false, false]
+        imu0_nodelay: true
+        imu0_differential: true
+        imu0_remove_gravitational_acceleration: true
+      </rosparam>
+      <rosparam if="$(arg use_visual_odom)">
+        frequency: 50
+        sensor_timeout: 1.0
+        two_d_mode: true
+        publish_tf: false
         publish_acceleration: false
         map_frame: map
         odom_frame: odom

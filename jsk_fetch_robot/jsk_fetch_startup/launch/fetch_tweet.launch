@@ -1,4 +1,7 @@
 <launch>
+  <arg name="odom_topic" default="/odom"/>
+  <arg name="robot_state_topic" default="/robot_state"/>
+
   <include file="$(find jsk_fetch_startup)/jsk_fetch.machine" />
 
   <include file="$(find jsk_robot_startup)/lifelog/tweet.launch">
@@ -9,8 +12,8 @@
     <arg name="output" value="screen"/>
     <arg name="motor_subscribe" value="true"/>
     <arg name="odom_subscribe" value="true"/>
-    <arg name="remap_motor_state" value="/robot_state"/>
-    <arg name="remap_odom_state" default="/odom_visual" />
+    <arg name="remap_motor_state" value="$(arg robot_state_topic)"/>
+    <arg name="remap_odom_state" value="$(arg odom_topic)" />
     <arg name="account_info" value="/var/lib/robot/twitter_account_fetch_jsk.yaml" />
   </include>
 

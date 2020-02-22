@@ -99,6 +99,8 @@ https://github.com/IntelRealSense/librealsense/blob/master/third-party/libtm/lib
   <arg name="allow_no_texture_points"  default="false"/>
 
   <arg name="topic_odom_out"      default="/odom_visual"/>
+  <arg name="base_frame_id"       default="base_link"/>
+  <arg name="publish_virtual_joint"   default="true"/>
 
   <group ns="$(arg camera)">
     <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" required="$(arg required)"/>
@@ -191,4 +193,11 @@ https://github.com/IntelRealSense/librealsense/blob/master/third-party/libtm/lib
       <remap from="odom/sample" to="$(arg topic_odom_out)" />
     </node>
   </group>
+
+  <node
+      pkg="tf"
+      type="static_transform_publisher"
+      name="t265_to_base_link_virtual_joint"
+      args="-0.441 -0.008 -0.225 0 0.524 0 $(arg pose_frame_id) $(arg base_frame_id) 10"
+      if="$(arg publish_virtual_joint" />
 </launch>

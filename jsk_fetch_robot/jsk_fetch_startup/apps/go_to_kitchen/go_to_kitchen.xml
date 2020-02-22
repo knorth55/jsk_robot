@@ -41,5 +41,5 @@
 
   <node name="go_to_kitchen_rosbag_recorder" pkg="rosbag" type="record"
         args="-q -O $(arg video_path)/$(arg rosbag_title)
-              /tf /joint_states /odom /odom_combined /cmd_vel" />
+              /tf /joint_states /odom /odom_wheel /cmd_vel" />
 </launch>
