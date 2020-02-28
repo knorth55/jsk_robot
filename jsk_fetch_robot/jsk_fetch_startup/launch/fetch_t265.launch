@@ -82,7 +82,7 @@
   <arg name="odom_frame_id"            default="$(arg tf_prefix)_odom_frame"/>
   <arg name="topic_odom_in"            default="$(arg tf_prefix)/odom_in"/>
   <arg name="calib_odom_file"          default=""/>
-  <arg name="publish_odom_tf"          default="false"/>
+  <arg name="publish_odom_tf"          default="true"/>
   <arg name="filters"                  default=""/>
   <arg name="clip_distance"            default="-1"/>
   <arg name="linear_accel_cov"         default="0.01"/>
@@ -94,22 +94,31 @@
   <arg name="robot_base_frame_id"       default="base_link"/>
   <arg name="publish_virtual_joint"   default="true"/>
   <arg name="map_frame_id" default="map"/>
+  <arg name="internal_pose_frame_id" default="internal_$(arg pose_frame_id)" />
 
   <node
       pkg="tf"
       type="static_transform_publisher"
       name="t265_to_base_link_virtual_joint"
-      args="0.270 0.0081 0.4152 3.141592 0.524 0 $(arg robot_base_frame_id) $(arg pose_frame_id) 10"
+      args="0.270 0.0081 0.4152 3.141592 0.524 0 $(arg robot_base_frame_id) $(arg internal_pose_frame_id) 10"
+      output="screen"
       if="$(arg publish_virtual_joint)" />
 
+  <!--
   <node
       pkg="jsk_fetch_startup"
       type="t265_odom_frame_publisher.py"
       name="t265_odom_frame_publisher"
+      output="screen"
       >
-      <param name="~parent_frame_id" value="$(arg map_frame_id)" />
-      <param name="~child_frame_id" value="$(arg pose_frame_id)" />
+      <remap from="~input" to="$(arg topic_odom_out)" />
+
+      <param name="~map_frame_id" value="$(arg map_frame_id)" />
+      <param name="~odom_frame_id" value="$(arg odom_frame_id)" />
+      <param name="~pose_frame_id" value="$(arg pose_frame_id)" />
+      <param name="~internal_pose_frame_id" value="$(arg internal_pose_frame_id)" />
   </node>
+  -->
 
   <group ns="$(arg camera)">
     <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" required="$(arg required)"/>
