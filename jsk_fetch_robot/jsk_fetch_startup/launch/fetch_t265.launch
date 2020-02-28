@@ -82,7 +82,7 @@
   <arg name="odom_frame_id"            default="$(arg tf_prefix)_odom_frame"/>
   <arg name="topic_odom_in"            default="$(arg tf_prefix)/odom_in"/>
   <arg name="calib_odom_file"          default=""/>
-  <arg name="publish_odom_tf"          default="true"/>
+  <arg name="publish_odom_tf"          default="false"/>
   <arg name="filters"                  default=""/>
   <arg name="clip_distance"            default="-1"/>
   <arg name="linear_accel_cov"         default="0.01"/>
@@ -191,5 +191,5 @@
       type="static_transform_publisher"
       name="t265_to_base_link_virtual_joint"
       args="-0.441 -0.008 -0.225 0 0.524 0 $(arg pose_frame_id) $(arg base_frame_id) 10"
-      if="$(arg publish_virtual_joint" />
+      if="$(arg publish_virtual_joint)" />
 </launch>
