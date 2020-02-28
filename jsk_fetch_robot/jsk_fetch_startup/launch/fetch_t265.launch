@@ -91,7 +91,7 @@
   <arg name="allow_no_texture_points"  default="false"/>
 
   <arg name="topic_odom_out"      default="/odom_visual"/>
-  <arg name="base_frame_id"       default="base_link"/>
+  <arg name="robot_base_frame_id"       default="base_link"/>
   <arg name="publish_virtual_joint"   default="true"/>
 
   <group ns="$(arg camera)">
@@ -190,6 +190,6 @@
       pkg="tf"
       type="static_transform_publisher"
       name="t265_to_base_link_virtual_joint"
-      args="0.270 0.0081 0.4152 3.141592 0.524 0 $(arg base_frame_id) $(arg pose_frame_id) 10"
+      args="0.270 0.0081 0.4152 3.141592 0.524 0 $(arg robot_base_frame_id) $(arg pose_frame_id) 10"
       if="$(arg publish_virtual_joint)" />
 </launch>
