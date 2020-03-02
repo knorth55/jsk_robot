@@ -37,7 +37,7 @@ class OdomFramePublisher(object):
 
     def spin(self):
 
-        r = rospy.Rate(10)
+        r = rospy.Rate(50)
         while not rospy.is_shutdown():
             if self.trans_3 is not None:
                 self.broadcaster.sendTransform(
@@ -46,33 +46,28 @@ class OdomFramePublisher(object):
                         rospy.Time.now(),
                         self.t265_odom_frame_id,
                         self.map_frame_id )
-                if not self.checkValid():
-                    rospy.logerr('Error')
             r.sleep()
-
-    def checkValid(self):
-        return True
 
     def _cb(self, msg):
         self.sub.unregister()
         if self.flag:
             self.flag = False
 
-            tf_odom2pose = self.listener.lookupTransform(
-                    self.t265_odom_frame_id,
+            tf_pose2odom = self.listener.lookupTransform(
                     self.t265_pose_frame_id,
+                    self.t265_odom_frame_id,
                     rospy.Time(0))
             tf_map2pose = self.listener.lookupTransform(
                     self.map_frame_id,
                     self.internal_pose_frame_id,
                     rospy.Time(0))
 
-            frame_odom2pose = pm.fromTf( tf_odom2pose )
+            frame_pose2odom = pm.fromTf( tf_pose2odom )
             frame_map2pose = pm.fromTf( tf_map2pose )
-            ( self.trans_3, self.rot_3 ) = pm.toTf( frame_odom2pose * frame_map2pose )
+            ( self.trans_3, self.rot_3 ) = pm.toTf( frame_map2pose * frame_pose2odom )
 
             rospy.loginfo('broadcasting tf')
 
 if __name__=='__main__':
     odompub = OdomFramePublisher()
-    rospy.spin()
+    odompub.spin()
