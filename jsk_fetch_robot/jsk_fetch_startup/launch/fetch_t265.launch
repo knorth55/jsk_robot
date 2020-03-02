@@ -104,7 +104,6 @@
       output="screen"
       if="$(arg publish_virtual_joint)" />
 
-  <!--
   <node
       pkg="jsk_fetch_startup"
       type="t265_odom_frame_publisher.py"
@@ -118,7 +117,6 @@
       <param name="~pose_frame_id" value="$(arg pose_frame_id)" />
       <param name="~internal_pose_frame_id" value="$(arg internal_pose_frame_id)" />
   </node>
-  -->
 
   <group ns="$(arg camera)">
     <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" required="$(arg required)"/>

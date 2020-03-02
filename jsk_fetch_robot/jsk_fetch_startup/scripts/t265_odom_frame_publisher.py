@@ -1,49 +1,75 @@
 #!/usr/bin/env python
 
 import rospy
-import tf2_ros
+import tf
+import tf_conversions.posemath as pm
 
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped
 
 class OdomFramePublisher(object):
+    """
+    a Class to publish a tf from /map to /t265_odom_frame
+        based on tfs from /map to /internal_t265_pose_frame
+        and from /t265_odom_frame to t265_pose_frame
+        when the node started.
+    """
 
     def __init__(self):
+        # Initialization
         rospy.init_node('odom_frame_publisher')
-        self.tfBuffer = tf2_ros.Buffer()
-        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+        # rosparam
+        self.map_frame_id = rospy.get_param('~map_frame_id','map')
+        self.t265_odom_frame_id = rospy.get_param('~t265_odom_frame_id','t265_odom_frame')
+        self.t265_pose_frame_id = rospy.get_param('~t265_pose_frame_id','t265_pose_frame')
+        self.internal_pose_frame_id = rospy.get_param('~internal_pose_frame_id','internal_t265_pose_frame')
+        # Subscriber & Publisher
+        self.listener = tf.TransformListener()
+        self.broadcaster = tf.TransformBroadcaster()
         self.sub = rospy.Subscriber(
                 '~input', Odometry, self._cb, queue_size=1)
-        self.broadcaster = tf2_ros.StaticTransformBroadcaster()
-        self.map_frame_id = rospy.get_param('~map_frame_id','map')
-        self.odom_frame_id = rospy.get_param('~odom_frame_id','t265_odom_frame')
-        self.pose_frame_id = rospy.get_param('~pose_frame_id','t265_pose_frame')
-        self.internal_pose_frame_id = rospy.get_param('~internal_pose_frame_id','internal_t265_pose_frame')
+        #
+        self.trans_3 = None
+        self.rot_3 = None
+        # Others
         self.flag = True
-
         rospy.loginfo('Initialization finished')
+
+    def spin(self):
+
+        r = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            if self.trans_3 is not None:
+                self.broadcaster.sendTransform(
+                        self.trans_3,
+                        self.rot_3,
+                        rospy.Time.now(),
+                        self.t265_odom_frame_id,
+                        self.map_frame_id )
+                if not self.checkValid():
+                    rospy.logerr('Error')
+            r.sleep()
+
+    def checkValid(self):
+        return True
 
     def _cb(self, msg):
         self.sub.unregister()
         if self.flag:
             self.flag = False
 
-            tf_pose2map = self.tfBuffer.lookup_transform(
-                    self.map_frame_id,
-                    self.pose_frame_id,
+            tf_odom2pose = self.listener.lookupTransform(
+                    self.t265_odom_frame_id,
+                    self.t265_pose_frame_id,
                     rospy.Time(0))
-            tf_interpose2map = self.tfBuffer.lookup_transform(
+            tf_map2pose = self.listener.lookupTransform(
                     self.map_frame_id,
                     self.internal_pose_frame_id,
                     rospy.Time(0))
-            tf_
 
-            static_transformStamped = TransformStamped()
-            static_transformStamped.header.stamp = rospy.Time.now()
-            static_transformStamped.header.frame_id = self.map_frame_id
-            static_transformStamped.child_frame_id = self.odom_frame_id
-
-            self.broadcaster.sendTransform( static_transformStamped )
+            frame_odom2pose = pm.fromTf( tf_odom2pose )
+            frame_map2pose = pm.fromTf( tf_map2pose )
+            ( self.trans_3, self.rot_3 ) = pm.toTf( frame_odom2pose * frame_map2pose )
 
             rospy.loginfo('broadcasting tf')
 
