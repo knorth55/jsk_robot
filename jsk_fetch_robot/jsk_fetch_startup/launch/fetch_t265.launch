@@ -100,7 +100,7 @@
       pkg="tf"
       type="static_transform_publisher"
       name="t265_to_base_link_virtual_joint"
-      args="-0.441 -0.008 -0.225 0 0.524 0 $(arg robot_base_frame_id) $(arg internal_pose_frame_id) 10"
+      args="-0.441 -0.008 -0.225 0 0.524 0 $(arg pose_frame_id) $(arg robot_base_frame_id) 10"
       output="screen"
       if="$(arg publish_virtual_joint)" />
 
