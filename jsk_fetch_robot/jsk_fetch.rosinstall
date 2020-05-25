@@ -34,13 +34,13 @@
 - git:
     local-name: jsk-ros-pkg/jsk_pr2eus
     uri: https://github.com/jsk-ros-pkg/jsk_pr2eus.git
-    version: 0.3.14
+    version: 4102b8d3a542b9e93b4115065b2bea2494092abc
 # to use fetch's dock position for several demos
 # Now, we set CATKIN_IGNORE to all packages except jsk_maps because we need only jsk_maps in fetch PC
 - git:
     local-name: jsk-ros-pkg/jsk_demos
     uri: https://github.com/jsk-ros-pkg/jsk_demos.git
-    version: 7c429715d0adf12c5dd34459ceb4b0a5b11dec6c
+    version: 1f81e61c890e0642251ce0ec12952eb0828aadca
 # need to build from source because of nodelet version
 - git:
     local-name: jsk-ros-pkg/jsk_recognition
