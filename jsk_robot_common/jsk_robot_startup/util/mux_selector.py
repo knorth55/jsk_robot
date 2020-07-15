@@ -51,12 +51,11 @@ def add_trigger(topic, expr, select, index):
     topic_class, _, _ = rostopic.get_topic_class(topic)
 
     if(topic_type is None):
-        rospy.loginfo('%s is not published yet', topic)
-        return None
+        rospy.logwarn('%s is not published yet', topic)
 
     if(topic_class is None):
-        rospy.loginfo('%s is not builded yet', topic_type)
-        return None
+        rospy.logwarn('%s is not builded yet', topic_type)
+        topic_class = rospy.AnyMsg
 
     try:
         cb_obj = gen_callback(expr, select, index)
