@@ -26,6 +26,17 @@ catkin_add_env_hooks(99.jsk_fetch_startup SHELLS bash zsh sh
 install(DIRECTORY config launch scripts data
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
+# Create Rviz icon for fetch
+configure_file(config/RVizfetch.desktop.in
+  $ENV{HOME}/.local/share/applications/RVizfetch.desktop)
+# If HOSTNAME is "fetchxxx", create $HOME/Desktop/RVizfetch.desktop
+cmake_host_system_information(RESULT _host_name QUERY HOSTNAME)
+if(${_host_name} MATCHES "^fetch")
+  configure_file(config/RVizfetch.desktop.in
+    $ENV{HOME}/Desktop/RVizfetch.desktop)
+endif()
+
+
 #############
 ## Testing ##
 #############
