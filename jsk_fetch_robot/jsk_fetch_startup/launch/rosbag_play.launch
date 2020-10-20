@@ -91,7 +91,7 @@
   <node pkg="audio_play" type="audio_play" name="audio_play" if="$(arg play_audio)" output="screen">
         <param name="dst" value="alsasink"/>
         <param name="do_timestamp" value="false"/>
-        <param name="format" value="mp3"/>
+        <param name="format" value="wave"/>
         <param name="channels" value="1"/>
         <param name="sample_rate" value="16000"/>
         <param name="sample_format" value="S16LE"/>
