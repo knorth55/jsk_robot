@@ -7,7 +7,8 @@
   <arg name="gui" default="false" />
   <arg name="loop_flag" value="--loop" if="$(arg loop)" />
   <arg name="loop_flag" value="" unless="$(arg loop)" />
-  <arg name="play_audio" default="false" />
+  <arg name="audio_play" default="false" />
+  <arg name="audio_device" default="" />
 
   <arg name="RGB_CAMERA_INFO" value="/head_camera/rgb/throttled/camera_info" />
   <arg name="RGB_IMAGE" value="/head_camera/rgb/throttled/image_rect_color" />
@@ -15,7 +16,7 @@
   <arg name="QUAT_RGB_IMAGE" value="/head_camera/rgb/quater/throttled/image_rect_color" />
   <arg name="DEPTH_CAMERA_INFO" value="/head_camera/depth_registered/throttled/camera_info" />
   <arg name="DEPTH_IMAGE" value="/head_camera/depth_registered/throttled/image_rect" />
-
+  
   <param name="use_sim_time" value="true" />
   <param name="robot_description" textfile="$(find fetch_description)/robots/fetch.urdf" />
 
@@ -88,7 +89,8 @@
   </node>
 
   <!-- audio play -->
-  <node pkg="audio_play" type="audio_play" name="audio_play" if="$(arg play_audio)" output="screen">
+  <node pkg="audio_play" type="audio_play" name="audio_play" if="$(arg audio_play)" output="screen">
+	    <param name="device" value="$(arg audio_device)" />
         <param name="dst" value="alsasink"/>
         <param name="do_timestamp" value="false"/>
         <param name="format" value="wave"/>
