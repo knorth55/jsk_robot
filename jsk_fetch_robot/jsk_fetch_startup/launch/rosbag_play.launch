@@ -90,7 +90,7 @@
 
   <!-- audio play -->
   <node pkg="audio_play" type="audio_play" name="audio_play" if="$(arg audio_play)" output="screen">
-	    <param name="device" value="$(arg audio_device)" />
+        <param name="device" value="$(arg audio_device)" />
         <param name="dst" value="alsasink"/>
         <param name="do_timestamp" value="false"/>
         <param name="format" value="wave"/>
