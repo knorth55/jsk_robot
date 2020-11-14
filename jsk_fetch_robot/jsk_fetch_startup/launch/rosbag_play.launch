@@ -16,7 +16,7 @@
   <arg name="QUAT_RGB_IMAGE" value="/head_camera/rgb/quater/throttled/image_rect_color" />
   <arg name="DEPTH_CAMERA_INFO" value="/head_camera/depth_registered/throttled/camera_info" />
   <arg name="DEPTH_IMAGE" value="/head_camera/depth_registered/throttled/image_rect" />
-  
+
   <param name="use_sim_time" value="true" />
   <param name="robot_description" textfile="$(find fetch_description)/robots/fetch.urdf" />
 
