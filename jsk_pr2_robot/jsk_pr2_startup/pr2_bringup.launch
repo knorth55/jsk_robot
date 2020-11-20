@@ -5,6 +5,7 @@
   <arg name="launch_ntp_monitor" default="true"/>
   <arg name="launch_wifi_ddwrt" default="false" />
   <arg name="launch_network_detector" default="true" />
+  <arg name="launch_network_status" default="true" />
   <arg name="launch_sound_play" default="true"/>
   <arg name="launch_audio_play" default="true"/>
   <arg name="launch_app_manager" default="true" />
@@ -199,6 +200,10 @@
         if="$(arg launch_network_detector)">
     <param name="interface_name" value="wan0"/>
   </node>
+
+  <!-- Monitor network status -->
+  <node pkg="jsk_network_tools" type="network_status.py" name="network_status"
+        if="$(arg launch_network_status)" />
 
   <!-- Diagnostics aggregation -->
   <node pkg="diagnostic_aggregator" type="aggregator_node"  name="diag_agg">
