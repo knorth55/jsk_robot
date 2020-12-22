@@ -1,3 +1,6 @@
+# This is rosinstall file for indigo PC inside fetch.
+# $ ln -s $(rospack find jsk_fetch_startup)/../jsk_fetch.rosinstall.$ROS_DISTRO $HOME/ros/$ROS_DISTRO/src/.rosinstall
+
 - git:
     local-name: PR2/app_manager
     uri: https://github.com/PR2/app_manager.git
@@ -105,7 +108,13 @@
     local-name: ros-planning/navigation
     uri: https://github.com/ros-planning/navigation.git
     version: 708yamaguchi/fetch15
+# Visualize visualization_msgs/MarkerArray >= 1.12.7 in RViz
 - git:
     local-name: ros-visualization/rviz
     uri: https://github.com/ros-visualization/rviz.git
     version: indigo-devel
+# fetch_open_auto_dock is not released in indigo
+- git:
+    local-name: fetchrobotics/fetch_open_auto_dock
+    uri: https://github.com/fetchrobotics/fetch_open_auto_dock.git
+    version: 0.1.2
