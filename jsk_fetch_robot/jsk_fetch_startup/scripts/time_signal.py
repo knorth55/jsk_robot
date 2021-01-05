@@ -113,10 +113,12 @@ class TimeSignal(object):
         wind_speed = resp['wind']['speed']
         forecast_text = ""
         if lang == 'ja':
+            # aques_talk replaces decimal point to "。" (e.g. 7.8度 -> 7。8ど)
+            # So we use integer for temperature, humidity and wind speed.
             forecast_text = "現在、天気は" + weather + "、"
-            forecast_text += "気温は{}度、".format(temp)
-            forecast_text += "湿度は{}%です。".format(humidity)
-            forecast_text += "風速は{}メートル秒です。".format(wind_speed)
+            forecast_text += "気温は{}度、".format(int(temp))
+            forecast_text += "湿度は{}パーセントです。".format(int(humidity))
+            forecast_text += "風速は{}メートル秒です。".format(int(wind_speed))
         else:
             forecast_text = " The weather is " + weather + " now."
             forecast_text += " The temperature is {} celsius,".format(temp)
