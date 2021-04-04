@@ -3,8 +3,6 @@
     This launch file is copied from realsense2_camera in realsense_ros https://github.com/IntelRealSense/realsense-ros and then modified
     And it is originally distributed under Apache-2.0 License
   -->
-  <arg name="external_manager"    default="false"/>
-  <arg name="manager"             default="realsense2_camera_manager"/>
   <arg name="serial_no"           default=""/>
   <arg name="usb_port_id"         default=""/>
   <arg name="device_type"         default=""/>
@@ -102,11 +100,13 @@
   <arg name="linear_accel_cov"         default="0.01"/>
   <arg name="initial_reset"            default="false"/>
   <arg name="unite_imu_method"         default="none"/> <!-- Options are: [none, copy, linear_interpolation] -->
-  
 
-
-  <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="$(arg output)" required="$(arg required)"/>
-  <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)">
+  <node
+      pkg="nodelet"
+      type="nodelet"
+      name="$(arg tf_prefix)_realsense2_camera"
+      args="standalone realsense2_camera/RealSenseNodeFactory"
+      required="$(arg required)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
     <param name="usb_port_id"              type="str"  value="$(arg usb_port_id)"/>
     <param name="device_type"              type="str"  value="$(arg device_type)"/>
