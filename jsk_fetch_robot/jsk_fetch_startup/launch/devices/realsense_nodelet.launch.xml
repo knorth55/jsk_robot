@@ -9,7 +9,7 @@
   <arg name="tf_prefix"           default=""/>
   <arg name="json_file_path"      default=""/>
   <arg name="rosbag_filename"     default=""/>
-  <arg name="required"            default="false"/>
+  <arg name="respawn"             default="false"/>
   <arg name="output"              default="screen"/>  <!-- [ screen | log ]-->
 
   <arg name="fisheye_width"       default="0"/>
@@ -106,7 +106,7 @@
       type="nodelet"
       name="$(arg tf_prefix)_realsense2_camera"
       args="standalone realsense2_camera/RealSenseNodeFactory"
-      required="$(arg required)">
+      respawn="$(arg respawn)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
     <param name="usb_port_id"              type="str"  value="$(arg usb_port_id)"/>
     <param name="device_type"              type="str"  value="$(arg device_type)"/>
