@@ -69,7 +69,7 @@ class OdometryTransformer(object):
            math.isnan( msg.twist.twist.angular.y ) or \
            math.isnan( msg.twist.twist.angular.z ):
             if (rospy.Time.now() - self._last_warning).secs > 10:
-                rospy.logwarn('Recieved an odom message with nan values')
+                rospy.logwarn('Received an odom message with nan values')
                 self._last_warning = rospy.Time.now()
             return
 
