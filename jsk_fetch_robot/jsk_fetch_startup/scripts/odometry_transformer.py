@@ -51,7 +51,6 @@ class OdometryTransformer(object):
         self._pub_odom = rospy.Publisher('~odom_out', Odometry, queue_size=1)
         self._sub_odom = rospy.Subscriber(
             '~odom_in', Odometry, self.cb_odometry)
-        self._last_warning = rospy.Time.now()
 
     def cb_odometry(self, msg):
 
@@ -68,9 +67,8 @@ class OdometryTransformer(object):
            math.isnan( msg.twist.twist.angular.x ) or \
            math.isnan( msg.twist.twist.angular.y ) or \
            math.isnan( msg.twist.twist.angular.z ):
-            if (rospy.Time.now() - self._last_warning).secs > 10:
-                rospy.logwarn('Received an odom message with nan values')
-                self._last_warning = rospy.Time.now()
+            rospy.logwarn_throttle(
+                10, 'Received an odom message with nan values')
             return
 
         pos_t265_odombased = np.array([
