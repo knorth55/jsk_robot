@@ -100,6 +100,12 @@ plugins:
         - go_to_kitchen_rosbag.bag
       upload_parents_path: fetch_go_to_kitchen
       upload_server_name: /gdrive_server
+  - name: tweet_notifier_plugin
+    type: app_notifier/tweet_notifier_plugin
+    plugin_args:
+      client_name: /tweet_image_server/tweet
+      image: true
+      image_topic_name: /edgetpu_object_detector/output/image
   - name: speech_notifier_plugin
     type: app_notifier/speech_notifier_plugin
     plugin_args:
@@ -139,6 +145,7 @@ plugin_order:
     - rosbag_recorder_plugin
     - result_recorder_plugin
     - gdrive_uploader_plugin
+    - tweet_notifier_plugin
     - speech_notifier_plugin
     - mail_notifier_plugin
     - shutdown_plugin
@@ -153,6 +160,7 @@ plugin_order:
     - rosbag_recorder_plugin
     - result_recorder_plugin
     - gdrive_uploader_plugin
+    - tweet_notifier_plugin
     - speech_notifier_plugin
     - mail_notifier_plugin
     - shutdown_plugin
