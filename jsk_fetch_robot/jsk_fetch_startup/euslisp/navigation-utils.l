@@ -1,4 +1,5 @@
 (load "package://jsk_robot_startup/lifelog/tweet_client.l")
+(load "package://jsk_maps/src/change-floor.l")
 
 (ros::load-ros-manifest "fetch_auto_dock_msgs")
 (ros::load-ros-manifest "jsk_robot_startup")
