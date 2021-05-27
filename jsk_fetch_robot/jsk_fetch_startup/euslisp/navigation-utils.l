@@ -234,3 +234,32 @@
       (send *ri* :speak "Turn off the light." :wait t))
     (unix::sleep 1)
     (and success-go-to-kitchen success-auto-dock)))
+
+(defun go-to-elevator-front (floor_num)
+  ;; go to the front of the elevator on the current floor
+  (send *ri* :clear-costmap)
+  (cond
+   ((= floor_num 7) ;; 7F
+      (send *ri* :move-to (make-coords :pos #f(1850 -30746 0) :rpy (float-vector -pi/2 0 0)) :frame-id "/map"))
+   ((= floor_num 3) ;; 3F
+      (send *ri* :move-to (make-coords :pos #f(1837 -30734 -0) :rpy (float-vector -pi/2 0 0)) :frame-id "/map"))
+   ;; TODO other floors
+   (t (ros::ros-error "choose another floor!"))))
+
+(defun get-on-elevator ()
+  (send *ri* :clear-costmap)
+  (send *ri* :go-pos 3.0 0 180)
+  (unix:sleep 1)
+  (send *ri* :speak-jp "エレベーターに乗りました"))
+
+(defun get-off-elevator (get_off_floor_num)
+  ;; get off an elevator with changing maps 
+  (let ((get_off_floor (format nil "/eng2/~Af" get_off_floor_num)))
+    (change-floor get_off_floor :base-frame-name "/base_link")
+    (send *ri* :speak-jp "マップを切り替えました" :wait t)
+    (send *ri* :clear-costmap)
+    ;; CHANGE TO MOVE-TO?
+        (ros::service-call "/passthrough/stop" *pass-req* t)
+    (send *ri* :go-pos 3.5 0 0)
+    (unix:sleep 1)
+    (send *ri* :speak-jp "エレベータからおりました" :wait t)))
