@@ -259,7 +259,7 @@
     (send *ri* :speak-jp "マップを切り替えました" :wait t)
     (send *ri* :clear-costmap)
     ;; CHANGE TO MOVE-TO?
-        (ros::service-call "/passthrough/stop" *pass-req* t)
+    (ros::service-call "/passthrough/stop" *pass-req* t)
     (send *ri* :go-pos 3.5 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)))
