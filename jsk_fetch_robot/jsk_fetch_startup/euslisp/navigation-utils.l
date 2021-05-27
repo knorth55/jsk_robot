@@ -263,3 +263,8 @@
     (send *ri* :go-pos 3.5 0 0)
     (unix:sleep 1)
     (send *ri* :speak-jp "エレベータからおりました" :wait t)))
+
+(defun change-floor-fetch (floor_num)
+  ;; fetch version of change-floor
+  (let ((floor (format nil "/eng2/~Af" floor_num)))
+    (change-floor floor :base-frame-name "/base_link")))
