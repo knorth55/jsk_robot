@@ -28,3 +28,9 @@
     local-name: fetchrobotics/fetch_ros
     uri: https://github.com/fetchrobotics/fetch_ros.git
     version: 0ad250a996a2ef68172fc064698f253bc9cf08d0
+# jsk_fetch_startup requires rwt_image_view with following PRs.
+# https://github.com/jsk-ros-pkg/jsk_robot/pull/1225
+- git:
+    local-name: tork-a/visualization_rwt
+    uri: https://github.com/tork-a/visualization_rwt.git
+    version: 0.0.5
