@@ -6,10 +6,10 @@
   <arg name="use_realsense" default="true" />
 
   <!-- realsense serial numbers -->
-  <arg name="RS_SERIALNO_T265" default="" />
-  <arg name="RS_SERIALNO_D435_FRONTRIGHT" default="" />
-  <arg name="RS_SERIALNO_D435_FRONTLEFT" default="" />
-  <arg name="RS_SERIALNO_L515_HEAD" default="" />
+  <arg name="RS_SERIALNO_T265" default="$(optenv RS_SERIALNO_T265)" />
+  <arg name="RS_SERIALNO_D435_FRONTRIGHT" default="$(optenv RS_SERIALNO_D435_FRONTRIGHT)" />
+  <arg name="RS_SERIALNO_D435_FRONTLEFT" default="$(optenv RS_SERIALNO_D435_FRONTLEFT)" />
+  <arg name="RS_SERIALNO_L515_HEAD" default="$(optenv RS_SERIALNO_L515_HEAD)" />
 
   <!-- GDB Debug Option -->
   <arg name="debug" default="false"/>
