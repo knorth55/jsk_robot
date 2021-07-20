@@ -2,6 +2,10 @@
 
   <arg name="respawn" default="true" />
 
+  <arg name="RS_SERIALNO_T265" default="" />
+  <arg name="RS_SERIALNO_D435_FRONTRIGHT" default="" />
+  <arg name="RS_SERIALNO_D435_FRONTLEFT" default="" />
+
   <!-- t265 -->
   <group ns="t265">
     <rosparam>
@@ -13,7 +17,7 @@
     </rosparam>
     <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
       <arg name="tf_prefix"                value="t265"/>
-      <arg name="serial_no"                value=""/>
+      <arg name="serial_no"                value="$(arg RS_SERIALNO_T265)"/>
       <arg name="usb_port_id"              value=""/>
       <arg name="device_type"              value="t265"/>
       <arg name="json_file_path"           value=""/>
@@ -47,7 +51,7 @@
   <group ns="d435_front_right">
     <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
       <arg name="device_type"           value="d435"/>
-      <arg name="serial_no"             value=""/>
+      <arg name="serial_no"             value="$(arg RS_SERIALNO_D435_FRONTRIGHT)"/>
       <arg name="tf_prefix"             value="d435_front_right"/>
       <arg name="initial_reset"         value="true"/>
       <arg name="align_depth"           value="true"/>
@@ -64,7 +68,7 @@
   <group ns="d435_front_left">
     <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
       <arg name="device_type"           value="d435"/>
-      <arg name="serial_no"             value=""/>
+      <arg name="serial_no"             value="$(arg RS_SERIALNO_D435_FRONTLEFT)"/>
       <arg name="tf_prefix"             value="d435_front_left"/>
       <arg name="initial_reset"         value="true"/>
       <arg name="align_depth"           value="true"/>
