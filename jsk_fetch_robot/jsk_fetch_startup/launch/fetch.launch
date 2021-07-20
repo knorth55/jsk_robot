@@ -9,6 +9,7 @@
   <arg name="RS_SERIALNO_T265" default="" />
   <arg name="RS_SERIALNO_D435_FRONTRIGHT" default="" />
   <arg name="RS_SERIALNO_D435_FRONTLEFT" default="" />
+  <arg name="RS_SERIALNO_L515_HEAD" default="" />
 
   <!-- GDB Debug Option -->
   <arg name="debug" default="false"/>
@@ -32,6 +33,7 @@
       <arg name="RS_SERIALNO_T265" value="$(arg RS_SERIALNO_T265)" />
       <arg name="RS_SERIALNO_D435_FRONTRIGHT" value="$(arg RS_SERIALNO_D435_FRONTRIGHT)" />
       <arg name="RS_SERIALNO_D435_FRONTLEFT" value="$(arg RS_SERIALNO_D435_FRONTLEFT)" />
+      <arg name="RS_SERIALNO_L515_HEAD" value="$(arg RS_SERIALNO_L515_HEAD)" />
   </include>
 
   <!-- Odometry -->
