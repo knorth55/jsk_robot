@@ -91,12 +91,13 @@
       <arg name="initial_reset"         value="true"/>
       <arg name="align_depth"           value="true"/>
       <arg name="filters"               value="pointcloud"/>
-      <arg name="color_width"           value="640"/>
-      <arg name="color_height"          value="480"/>
+      <arg name="color_width"           value="1920"/>
+      <arg name="color_height"          value="1080"/>
       <arg name="depth_width"           value="640"/>
       <arg name="depth_height"          value="480"/>
       <arg name="clip_distance"         value="-2"/>
       <arg name="enable_pointcloud"     value="true"/>
+      <arg name="enable_infra"          value="true"/>
       <arg name="respawn"              value="$(arg respawn)"/>
     </include>
   </group>
