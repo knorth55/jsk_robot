@@ -28,10 +28,10 @@
     <child link="head_l515_mount_link" />
   </joint>
 
-  <link name="head_l515_base_link"/>
+  <link name="l515_head_link"/>
   <joint name="head_l515_virtual_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0095 0 0.01485" />
     <parent link="head_l515_mount_link" />
-    <child link="head_l515_base_link" />
+    <child link="l515_head_link" />
   </joint>
 </robot>
