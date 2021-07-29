@@ -9,7 +9,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0" />
       <geometry>
-        <mesh filename="package://jsk_fetch_accessories/head_l515/fetch_head_l515_mount_simplified.stl" scale="0.001 0.001 0.001" />
+        <mesh filename="package://jsk_fetch_accessories/head_l515/fetch_head_l515_mount.stl" scale="0.001 0.001 0.001" />
       </geometry>
       <material name="">
         <color rgba="0.356 0.361 0.376 1" />
@@ -23,15 +23,15 @@
     </collision>
   </link>
   <joint name="head_l515_mount_virtual_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0" />
-    <parent link="head_pitch_link" />
+    <origin rpy="0 0 0" xyz="0.0255 0 0.055" />
+    <parent link="head_tilt_link" />
     <child link="head_l515_mount_link" />
   </joint>
 
-  <link name="head_l515_link"/>
+  <link name="head_l515_base_link"/>
   <joint name="head_l515_virtual_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0" />
+    <origin rpy="0 0 0" xyz="0.0095 0 0.01485" />
     <parent link="head_l515_mount_link" />
-    <child link="head_l515_link" />
+    <child link="head_l515_base_link" />
   </joint>
 </robot>
