@@ -8,7 +8,16 @@
     <!-- $ v4l2-ctl -d /dev/insta360 -\-list-formats-ext -->
     <arg name="height" value="736" />
     <arg name="width" value="1472" />
-    <arg name="throttle" value="true" />
+    <arg name="throttle" value="false" />
+    <!-- set low resolution -->
+    <arg name="mls_map_path" default="$(find jsk_perception)/config/fisheye_stitcher_grid_xd_yd_2000x1000.yml.gz" doc="Yaml file for MLS grids." />
+    <arg name="image_width" default="2000" />
+    <arg name="image_height" default="1000" />
+    <arg name="blend_param_p_wid" default="30" />
+    <arg name="blend_param_p_x1" default="75" />
+    <arg name="blend_param_p_x2" default="885" />
+    <arg name="blend_param_row_start" default="295" />
+    <arg name="blend_param_row_end" default="660" />
     <!-- for melodic -->
     <arg name="use_usb_cam" value="false" />
   </include>
@@ -22,8 +31,8 @@
       <remap from="~image" to="quater/output" />
       <remap from="~camera_info" to="quater/camera_info" />
       <rosparam>
-        scale_width: 0.25
-        scale_height: 0.25
+        scale_width: 0.5
+        scale_height: 0.5
       </rosparam>
     </node>
   </group>
