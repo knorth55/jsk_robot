@@ -213,6 +213,26 @@ Show logs
 tmuxinator log
 ```
 
+## Web UI
+
+There are some web UI deployed to Fetch.
+
+### Supervisor Web UI
+
+See [Supervisor section](#supervisor).
+
+### rwt_app_chooser
+
+See [Apps section](#apps).
+
+### webvideo
+
+http://webvideo.fetch1075.jsk.imi.i.u-tokyo.ac.jp/
+
+You can see image topics of Fetch on web browser.
+
+<TODO: image>
+
 ## Administration
 - 2016/10/26 add `allow 133.11.216/8` to /etc/chrony/chrony.conf
 - 2018/08/26 add `0 10 * * 1-5 /home/fetch/ros/indigo_robot/devel/env.sh rosservice call /fetch15/start_app "name: 'jsk_fetch_startup/go_to_kitchen'"` to crontab
