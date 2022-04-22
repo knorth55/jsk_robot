@@ -231,7 +231,7 @@ http://webvideo.fetch1075.jsk.imi.i.u-tokyo.ac.jp/
 
 You can see image topics of Fetch on web browser.
 
-<TODO: image>
+![Screenshot from 2022-04-21 08-54-46](https://user-images.githubusercontent.com/9410362/164580650-d023626a-8d85-4e3d-8a56-197209dea3a4.png)
 
 ## Administration
 - 2016/10/26 add `allow 133.11.216/8` to /etc/chrony/chrony.conf
