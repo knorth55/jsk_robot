@@ -33,4 +33,4 @@
 - git:
     local-name: tork-a/visualization_rwt
     uri: https://github.com/tork-a/visualization_rwt.git
-    version: 0.0.5
+    version: 52eacd778e0388915b80c8e6ddf38fa6147b5dbf
