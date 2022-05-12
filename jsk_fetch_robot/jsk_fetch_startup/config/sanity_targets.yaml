@@ -1,0 +1,24 @@
+topics:
+  - /audio
+  - /base_scan
+  - /battery_state
+  - /edgetpu_human_pose_estimator/output/image
+  - /edgetpu_object_detector/output/image
+  - /gripper/imu
+  - /head_camera/depth/image_raw
+  - /head_camera/rgb/image_raw
+  - /imu
+  - /insta360/image_raw
+  - /joint_states
+  - /tf
+
+nodes:
+  - /amcl
+  - /auto_dock
+  - /gripper_driver
+  - /head_camera/head_camera_nodelet_manager
+  - /move_base
+  - /move_group
+  - /respeaker_node
+  - /robot_driver
+  - /roswww
