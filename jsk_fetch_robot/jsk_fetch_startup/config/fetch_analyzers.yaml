@@ -144,3 +144,137 @@ analyzers:
         type: diagnostic_aggregator/GenericAnalyzer
         path: CPU Usage
         startswith: 'my_machine CPU Usage'
+  topics:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Topics
+    analyzers:
+      audio:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Audio
+        contains: '/audio'
+        timeout: 100
+        discard_stale: true
+      base_scan:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: BaseScan
+        contains: '/base_scan'
+        timeout: 100
+        discard_stale: true
+      battery_state:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: BatteryState
+        contains: '/battery_state'
+        timeout: 100
+        discard_stale: true
+      human_pose_estimator:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HumanPoseEstimator
+        contains: '/edgetpu_human_pose_estimator/output/image'
+        timeout: 100
+        discard_stale: true
+      object_detector:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: ObjectDetector
+        contains: '/edgetpu_object_detector/output/image'
+        timeout: 100
+        discard_stale: true
+      gripper_imu:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: GripperIMU
+        contains: '/gripper/imu'
+        timeout: 100
+        discard_stale: true
+      head_depth_image:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadDepthImage
+        contains: '/head_camera/depth/image_raw'
+        timeout: 100
+        discard_stale: true
+      head_rgb_image:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadRGBImage
+        contains: '/head_camera/rgb/image_raw'
+        timeout: 100
+        discard_stale: true
+      imu:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: IMU
+        contains: '/imu'
+        timeout: 100
+        discard_stale: true
+      insta360:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Insta360
+        contains: '/insta360'
+        timeout: 100
+        discard_stale: true
+      joint_states:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: JointStates
+        contains: '/joint_states'
+        timeout: 100
+        discard_stale: true
+      tf:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: TF
+        contains: '/tf'
+        timeout: 100
+        discard_stale: true
+  nodes:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Nodes
+    analyzers:
+      amcl:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: amcl
+        contains: '/amcl'
+        timeout: 100
+        discard_stale: true
+      auto_dock:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: AutoDock
+        contains: '/auto_dock'
+        timeout: 100
+        discard_stale: true
+      gripper_driver:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: GripperDriver
+        contains: '/gripper_driver'
+        timeout: 100
+        discard_stale: true
+      head_camera_manager:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadCameraManager
+        contains: '/head_camera/head_camera_nodelet_manager'
+        timeout: 100
+        discard_stale: true
+      move_base:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: MoveBase
+        contains: '/move_base'
+        timeout: 100
+        discard_stale: true
+      move_group:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: MoveGroup
+        contains: '/move_group'
+        timeout: 100
+        discard_stale: true
+      respeaker_node:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RespeakerNode
+        contains: '/respeaker_node'
+        timeout: 100
+        discard_stale: true
+      robot_driver:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RobotDriver
+        contains: '/robot_driver'
+        timeout: 100
+        discard_stale: true
+      roswww:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Roswww
+        contains: '/roswww'
+        timeout: 100
+        discard_stale: true
