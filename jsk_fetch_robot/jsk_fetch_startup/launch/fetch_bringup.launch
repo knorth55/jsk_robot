@@ -93,6 +93,11 @@
     <param name="load5_threshold" value="5.0"/>
   </node>
 
+  <!-- diagnostic speaker -->
+  <node name="audible_warning" pkg="jsk_tools" type="audible_warning.py">
+    <remap from="/robotsound" to="/sound_play" />
+  </node>
+
   <!-- twitter -->
   <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" />
 
