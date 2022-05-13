@@ -221,3 +221,132 @@ analyzers:
       'Controller',
       'Calibration']
     discard_stale: true
+
+  topics:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Topics
+    analyzers:
+      audio:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Audio
+        contains: '/audio'
+        timeout: 100
+        discard_stale: true
+      base_scan:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: BaseScan
+        contains: '/base_scan'
+        timeout: 100
+        discard_stale: true
+      battery_server:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: BatteryServer
+        contains: '/battery/server'
+        timeout: 100
+        discard_stale: true
+      battery_server2:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: BatteryServer2
+        contains: '/battery/server2'
+        timeout: 100
+        discard_stale: true
+      human_pose_estimator:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HumanPoseEstimator
+        contains: '/edgetpu_human_pose_estimator/output/image'
+        timeout: 100
+        discard_stale: true
+      object_detector:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: ObjectDetector
+        contains: '/edgetpu_object_detector/output/image'
+        timeout: 100
+        discard_stale: true
+      head_depth_image:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadDepthImage
+        contains: '/kinect_head/depth_registered/image'
+        timeout: 100
+        discard_stale: true
+      head_rgb_image:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: HeadRGBImage
+        contains: '/kinect_head/rgb/image_raw'
+        timeout: 100
+        discard_stale: true
+      l_arm_camera:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: LeftArmCamera
+        contains: '/l_forearm_cam/image_color'
+        timeout: 100
+        discard_stale: true
+      r_arm_camera:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RightArmCamera
+        contains: '/r_forearm_cam/image_color'
+        timeout: 100
+        discard_stale: true
+      joint_states:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: JointStates
+        contains: '/joint_states'
+        timeout: 100
+        discard_stale: true
+      tf:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: TF
+        contains: '/tf'
+        timeout: 100
+        discard_stale: true
+  nodes:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Nodes
+    analyzers:
+      amcl:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: amcl
+        contains: '/amcl'
+        timeout: 100
+        discard_stale: true
+      check_openni:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: CheckOpenni
+        contains: '/check_openni_node'
+        timeout: 100
+        discard_stale: true
+      kinect_manager:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: KinectManager
+        contains: '/kinect_head/kinect_head_nodelet_manager'
+        timeout: 100
+        discard_stale: true
+      kinect_c2_manager:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: KinectC2Manager
+        contains: '/kinect_head/kinect_head_c2_nodelet_manager'
+        timeout: 100
+        discard_stale: true
+      move_base:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: MoveBase
+        contains: '/move_base_node'
+        timeout: 100
+        discard_stale: true
+      respeaker_node:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RespeakerNode
+        contains: '/respeaker_node'
+        timeout: 100
+        discard_stale: true
+      realtime_loop:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: RealtimeLoop
+        contains: '/realtime_loop'
+        timeout: 100
+        discard_stale: true
+      roswww:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Roswww
+        contains: '/roswww'
+        timeout: 100
+        discard_stale: true
