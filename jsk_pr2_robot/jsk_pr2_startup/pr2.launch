@@ -197,4 +197,7 @@
     <remap from="~input" to="/kinect_head/rgb/image_raw" />
   </node>
 
+  <!-- diagnostic speaker -->
+  <node name="audible_warning" pkg="jsk_tools" type="audible_warning.py" />
+
 </launch>
