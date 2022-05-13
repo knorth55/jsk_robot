@@ -1,0 +1,24 @@
+topics:
+  - /audio
+  - /base_scan
+  - /battery/server
+  - /battery/server2
+  - /edgetpu_human_pose_estimator/output/image
+  - /edgetpu_object_detector/output/image
+  - /kinect_head/depth_registered/image
+  - /kinect_head/rgb/image_raw
+  - /l_forearm_cam/image_color
+  - /r_forearm_cam/image_color
+  - /joint_states
+  - /tf
+
+nodes:
+  - /amcl
+  - /check_openni_node
+  - /gripper_driver
+  - /kinect_head/kinect_head_nodelet_manager
+  - /kinect_head/kinect_head_c2_nodelet_manager
+  - /move_base_node
+  - /respeaker_node
+  - /realtime_loop
+  - /roswww
