@@ -53,3 +53,9 @@
 - git:
     local-name: UbiquityRobotics/magni_robot
     uri: https://github.com/UbiquityRobotics/magni_robot
+# jsk_fetch_startup requires rwt_image_view with following PRs.
+# https://github.com/jsk-ros-pkg/jsk_robot/pull/1225
+- git:
+    local-name: tork-a/visualization_rwt
+    uri: https://github.com/tork-a/visualization_rwt.git
+    version: 52eacd778e0388915b80c8e6ddf38fa6147b5dbf
