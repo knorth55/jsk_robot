@@ -84,12 +84,16 @@ descriptions of each variable are below.
   + Wi-Fi network interface for network management scripts (e.g. `network_monitor.py` and `network-log-wifi.sh`)
 - `NETWORK_DEFAULT_PROFILE_ID`
   + Network manager profile ID for network management scripts (`network_monitor.py`)
++ `NETWORK_DEFAULT_ROS_INTERFACE`
+  + Network interface or IP address which is used for ROS connection.
+  + `rossetip $NETWORK_DEFAULT_ROS_INTERFACE` is executed to set `ROS_IP`.
 
 It is also recommended to add lines below to each users's bashrc in the robot PC.
 
 ```bash
 source /var/lib/robot/config.bash
 rossetmaster localhost
+rossetip $NETWORK_DEFAULT_ROS_INTERFACE
 ```
 
 ### supervisor
