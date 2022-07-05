@@ -36,7 +36,7 @@ plugins:
         - /head_camera/depth_registered/throttled/camera_info
         - /head_camera/rgb/throttled/image_rect_color/compressed
         - /head_camera/depth_registered/throttled/image_rect/compressedDepth
-        - /rviz/image/compressed
+        - /rviz/throttled/image/compressed
         - /audio
   - name: head_camera_converter_plugin
     type: app_recorder/rosbag_video_converter_plugin
@@ -73,7 +73,7 @@ plugins:
     plugin_args:
       rosbag_path: /tmp
       rosbag_title: welcome_to_jsk_rosbag.bag
-      image_topic_name: /rviz/image/compressed
+      image_topic_name: /rviz/throttled/image/compressed
       image_fps: 30
       video_path: /tmp/welcome_to_jsk_rviz.mp4
   - name: respeaker_audio_converter_plugin

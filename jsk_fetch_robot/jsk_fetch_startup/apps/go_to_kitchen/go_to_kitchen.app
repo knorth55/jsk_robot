@@ -41,7 +41,7 @@ plugins:
         - /head_camera/depth_registered/throttled/camera_info
         - /head_camera/rgb/throttled/image_rect_color/compressed
         - /head_camera/depth_registered/throttled/image_rect/compressedDepth
-        - /rviz/image/compressed
+        - /rviz/throttled/image/compressed
         - /server_name/smach/container_init
         - /server_name/smach/container_status
         - /server_name/smach/container_structure
@@ -81,8 +81,8 @@ plugins:
     plugin_args:
       rosbag_path: /tmp
       rosbag_title: go_to_kitchen_rosbag.bag
-      image_topic_name: /rviz/image/compressed
-      image_fps: 5
+      image_topic_name: /rviz/throttled/image/compressed
+      image_fps: 30
       video_path: /tmp/go_to_kitchen_rviz.mp4
   - name: respeaker_audio_converter_plugin
     type: app_recorder/rosbag_audio_converter_plugin
