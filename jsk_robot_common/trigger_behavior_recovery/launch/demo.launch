@@ -45,36 +45,30 @@
         - name: "conservative_reset"
           type: "clear_costmap_recovery/ClearCostmapRecovery"
         - name: "speak_and_wait0"
-          type: "trigger_behavior_recovery/TriggerBehaviorRecovery"
+          type: "speak_and_wait_recovery/SpeakAndWaitRecovery"
         - name: "aggressive_reset"
           type: "clear_costmap_recovery/ClearCostmapRecovery"
         - name: "speak_and_wait1"
-          type: "trigger_behavior_recovery/TriggerBehaviorRecovery"
+          type: "speak_and_wait_recovery/SpeakAndWaitRecovery"
         - name: "all_reset"
           type: "clear_costmap_recovery/ClearCostmapRecovery"
       conservative_reset:
         reset_distance: 2.0
       speak_and_wait0:
-        trigger_action: /speak_and_wait_behavior/behavior
+        speak_text: "Make way, Please"
+        duration_wait: 5.0
+        duration_timeout: 1.0
+        sound_action: /sound_play
       aggressive_reset:
         reset_distance: 1.0 # 0.5
       speak_and_wait1:
-        trigger_action: /speak_and_wait_behavior/behavior
+        speak_text: "Make way, Please"
+        duration_wait: 5.0
+        duration_timeout: 1.0
+        sound_action: /sound_play
       all_reset:
         reset_distance: 0.0
     </rosparam>
-  </node>
-
-  <node
-      pkg="trigger_behavior_recovery"
-      type="speak_and_wait_behavior.py"
-      name="speak_and_wait_behavior"
-      >
-      <rosparam>
-        speak_text: "Make way, Please"
-        duration_wait: 5.0
-        sound_action: /sound_play
-      </rosparam>
   </node>
 
   <include file="$(find navigation_stage)/move_base_config/amcl_node.xml"/>  
