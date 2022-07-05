@@ -21,8 +21,9 @@ void TriggerBehaviorRecovery::initialize(
         ros::NodeHandle private_nh("~/" + name);
         private_nh.param("duration_timeout", duration_timeout_, 10.0);
         private_nh.param("result_timeout", result_timeout_, 60.0);
-        private_nh.param("trigger_action", trigger_action_name_, std::string("trigger_default_behavior"));
-        ptr_action_client_ = std::shared_ptr<actionlib::SimpleActionClient<trigger_behavior_msgs::TriggerBehaviorAction>>(new actionlib::SimpleActionClient<trigger_behavior_msgs::TriggerBehaviorAction>(trigger_action_name_, true));
+        std::string trigger_action_name;
+        private_nh.param("trigger_action", trigger_action_name, std::string("trigger_default_behavior"));
+        ptr_action_client_ = std::shared_ptr<actionlib::SimpleActionClient<trigger_behavior_msgs::TriggerBehaviorAction>>(new actionlib::SimpleActionClient<trigger_behavior_msgs::TriggerBehaviorAction>(trigger_action_name, true));
         initialized_ = true;
     } else {
         ROS_ERROR("You should not call initialize twice on this object, doing nothing");
@@ -48,24 +49,20 @@ void TriggerBehaviorRecovery::trigger()
 {
     trigger_behavior_msgs::TriggerBehaviorGoal goal;
     if ( not ptr_action_client_->waitForServer(ros::Duration(duration_timeout_)) ) {
-        ROS_ERROR_STREAM("Behavior action server \"" << trigger_action_name_ << "\" is not responding.");
+        ROS_ERROR("Behavior action server is not responding.");
         return;
     }
     ptr_action_client_->sendGoal(goal);
     if ( not ptr_action_client_->waitForResult(ros::Duration(result_timeout_)) ) {
-        ROS_ERROR_STREAM("Behavior action server \""
-                << trigger_action_name_
-                << "\" did not finish a behavior in a specified duration. ("
-                << result_timeout_
-                << " secs)");
+        ROS_ERROR("Behavior action server did not finish a behavior in a specified duration.");
         return;
     }
     auto result = ptr_action_client_->getResult();
     if ( result->success ) {
-        ROS_INFO_STREAM("Behavior succeeded. message: " << result->message);
+        ROS_INFO("Behavior succeeded. message:");
         return;
     } else {
-        ROS_ERROR_STREAM("Behavior failed. message: " << result->message);
+        ROS_ERROR("Behavior failed. message:");
         return;
     }
 }
