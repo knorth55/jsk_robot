@@ -152,14 +152,6 @@
   (let (result nearest-person-coords)
     (ros::ros-warn "server called")
     (setq result (send server :result))
-    (if (or (not *path-coords-list*)
-            (not *people-coords-list*))
-      (progn
-        (send result :result :success nil)
-        (send result :result :message "No message cached.")
-        (send server :set-aborted result)
-        (return-from execute-cb)
-        ))
     (setq nearest-person-coords
           (get-nearest-person-to-path
             *people-coords-list*
@@ -176,7 +168,7 @@
         (ros::ros-info "Beg to person to make way.")
         )
       (progn
-        (send result :result :success t)
+        (send result :result :success nil)
         (send result :result :message "No person on path.")
         (ros::ros-info "No person on path.")
         )
