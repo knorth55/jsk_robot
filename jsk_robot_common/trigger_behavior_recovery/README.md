@@ -5,19 +5,15 @@ This will be useful when a robot stuck in a crowded environment.
 
 <Image TODO>
 
-## `trigger_behavior_recovery/TriggerBehaviorRecovery` plugin
+## trigger_behavior_recovery/TriggerBehaviorRecovery
 
 ### Parameters
 
-- `~duration_timeout` (double, default: `10.0`)
+- `~duration_timeout` (double, default: `1.0`)
 
-Timeout duration for waiting for trigger behavior action server. (seconds)
+Duration for tf looking up transformations. (seconds)
 
-- `~result_timeout` (double, default: `60.0`)
-
-Timeout duration for trigger behavior action server. (seconds)
-
-- `~trigger_action` (string, default: `trigger_default_behavior`)
+- `~trigger_behavior_action` (string, default: `trigger_default_action`)
 
 Action name of an action server behavior.
 
@@ -28,29 +24,3 @@ Please see demo.launch for example usage.
 ```bash
 roslaunch trigger_behavior_recovery demo.launch
 ```
-
-## Default trigger behavior servers
-
-### speak_and_wait_behavior.py
-
-Trigger behavior version of `speak_and_wait_recovery`.
-
-#### Parameters
-
-- `~speak_text` (string, default: `Hello World!`)
-
-Text to be spoken.
-
-- `~duration_wait` (double, default: `5.0`)
-
-Duration of wating after speaking.
-
-- `~sound_action` (string, default: `sound_play`)
-
-Sound action server name.
-
-#### Action server
-
-- `~behavior` (type: `trigger_behavior_msgs/TriggerBehaviorAction`)
-
-Trigger behavior action server.
