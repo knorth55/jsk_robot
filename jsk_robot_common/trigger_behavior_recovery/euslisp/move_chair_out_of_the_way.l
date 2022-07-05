@@ -125,6 +125,6 @@
 
 (ros::rate 500)
 (while (ros::ok)
- (send *as* :worker)
+ (send s :worker)
  (ros::spin-once)
  (ros::sleep))
