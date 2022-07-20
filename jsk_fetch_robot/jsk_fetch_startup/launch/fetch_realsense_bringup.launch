@@ -1,0 +1,123 @@
+<launch>
+
+  <arg name="respawn" default="true" />
+
+  <arg name="RS_SERIAL_NO_T265" default="" />
+  <arg name="RS_SERIAL_NO_D435_FRONTRIGHT" default="" />
+  <arg name="RS_SERIAL_NO_D435_FRONTLEFT" default="" />
+  <arg name="RS_SERIAL_NO_L515_HEAD" default="" />
+
+  <arg name="l515_high_resolution" default="true" />
+  <!-- Available profiles can be shown by $ rs-enumerate-devices -->
+  <!-- L515 high resolution -->
+  <arg name="l515_color_width" default="1920" if="$(arg l515_high_resolution)" />
+  <arg name="l515_color_height" default="1080" if="$(arg l515_high_resolution)" />
+  <arg name="l515_depth_width" default="640" if="$(arg l515_high_resolution)" />
+  <arg name="l515_depth_height" default="480" if="$(arg l515_high_resolution)" />
+  <!-- L515 low resolution -->
+  <arg name="l515_color_width" default="640" unless="$(arg l515_high_resolution)" />
+  <arg name="l515_color_height" default="480" unless="$(arg l515_high_resolution)" />
+  <arg name="l515_depth_width" default="320" unless="$(arg l515_high_resolution)" />
+  <arg name="l515_depth_height" default="240" unless="$(arg l515_high_resolution)" />
+
+  <!-- t265 -->
+  <group ns="t265" if="$(eval arg('RS_SERIAL_NO_T265') != '')">
+    <rosparam>
+      /tracking_module/enable_mapping: false
+      /tracking_module/enable_relocalization: false
+      /tracking_module/enable_pose_jumping: false
+      /tracking_module/enable_dynamic_calibration: true
+      /tracking_module/enable_map_preservation: false
+    </rosparam>
+    <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
+      <arg name="tf_prefix"                value="t265"/>
+      <arg name="serial_no"                value="$(arg RS_SERIAL_NO_T265)"/>
+      <arg name="usb_port_id"              value=""/>
+      <arg name="device_type"              value="t265"/>
+      <arg name="json_file_path"           value=""/>
+
+      <arg name="enable_sync"              value="false"/>
+
+      <arg name="fisheye_width"            value="848"/>
+      <arg name="fisheye_height"           value="800"/>
+      <arg name="enable_fisheye1"          value="false"/>
+      <arg name="enable_fisheye2"          value="false"/>
+
+      <arg name="fisheye_fps"              value="30"/>
+      <arg name="gyro_fps"                 value="200"/>
+      <arg name="accel_fps"                value="62"/>
+      <arg name="enable_gyro"              value="true"/>
+      <arg name="enable_accel"             value="true"/>
+      <arg name="enable_pose"              value="true"/>
+
+      <arg name="linear_accel_cov"         value="0.01"/>
+      <arg name="initial_reset"            value="true"/>
+      <arg name="unite_imu_method"         value=""/>
+
+      <arg name="publish_odom_tf"          value="false"/>
+      <arg name="publish_tf"               value="false"/>
+
+      <arg name="respawn"                 value="$(arg respawn)"/>
+    </include>
+  </group>
+
+  <!-- d435 -->
+  <group ns="d435_front_right" if="$(eval arg('RS_SERIAL_NO_D435_FRONTRIGHT') != '')">
+    <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
+      <arg name="device_type"           value="d435"/>
+      <arg name="serial_no"             value="$(arg RS_SERIAL_NO_D435_FRONTRIGHT)"/>
+      <arg name="tf_prefix"             value="d435_front_right"/>
+      <arg name="initial_reset"         value="true"/>
+      <arg name="align_depth"           value="true"/>
+      <arg name="filters"               value="pointcloud"/>
+      <arg name="color_width"           value="640"/>
+      <arg name="color_height"          value="480"/>
+      <arg name="depth_width"           value="640"/>
+      <arg name="depth_height"          value="480"/>
+      <arg name="clip_distance"         value="-2"/>
+      <arg name="enable_pointcloud"     value="true"/>
+      <arg name="respawn"              value="$(arg respawn)"/>
+    </include>
+  </group>
+  <group ns="d435_front_left" if="$(eval arg('RS_SERIAL_NO_D435_FRONTLEFT') != '')">
+    <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
+      <arg name="device_type"           value="d435"/>
+      <arg name="serial_no"             value="$(arg RS_SERIAL_NO_D435_FRONTLEFT)"/>
+      <arg name="tf_prefix"             value="d435_front_left"/>
+      <arg name="initial_reset"         value="true"/>
+      <arg name="align_depth"           value="true"/>
+      <arg name="filters"               value="pointcloud"/>
+      <arg name="color_width"           value="640"/>
+      <arg name="color_height"          value="480"/>
+      <arg name="depth_width"           value="640"/>
+      <arg name="depth_height"          value="480"/>
+      <arg name="clip_distance"         value="-2"/>
+      <arg name="enable_pointcloud"     value="true"/>
+      <arg name="respawn"              value="$(arg respawn)"/>
+    </include>
+  </group>
+  <group ns="l515_head" if="$(eval arg('RS_SERIAL_NO_L515_HEAD') != '')">
+    <include file="$(find jsk_fetch_startup)/launch/devices/realsense_nodelet.launch.xml">
+      <arg name="device_type"           value="l515"/>
+      <arg name="serial_no"             value="$(arg RS_SERIAL_NO_L515_HEAD)"/>
+      <arg name="tf_prefix"             value="l515_head"/>
+      <arg name="initial_reset"         value="true"/>
+      <arg name="align_depth"           value="true"/>
+      <arg name="filters"               value="pointcloud"/>
+      <arg name="color_width"           value="$(arg l515_color_width)"/>
+      <arg name="color_height"          value="$(arg l515_color_height)"/>
+      <arg name="depth_width"           value="$(arg l515_depth_width)"/>
+      <arg name="depth_height"          value="$(arg l515_depth_height)"/>
+      <arg name="clip_distance"         value="-2"/>
+      <arg name="enable_pointcloud"     value="false"/>
+      <arg name="enable_infra"          value="true"/>
+      <arg name="respawn"              value="$(arg respawn)"/>
+    </include>
+    <rosparam>
+        /l515_head/motion_module/global_time_enabled: true
+        /l515_head/l500_depth_sensor/global_time_enabled: true
+        /l515_head/rgb_camera/global_time_enabled: true
+    </rosparam>
+  </group>
+
+</launch>

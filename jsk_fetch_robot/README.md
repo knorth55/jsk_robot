@@ -33,26 +33,42 @@
 
 ## How to Run
 
+### Setup Environment (For Remote PC)
 
-### Setup Environment
-
-First, you need to install ros. For ros indigo, please refer to install guide like [here](http://wiki.ros.org/indigo/Installation/Ubuntu)
+First, you need to install ROS. For ROS melodic, please refer to install guide like [here](http://wiki.ros.org/melodic/Installation/Ubuntu).
+Please make sure your ROS Distribution is indigo, kinetic or melodic.
 
 ```bash
 mkdir -p catkin_ws/src
 cd  catkin_ws/src
 wstool init .
 wstool set --git jsk-ros-pkg/jsk_robot https://github.com/jsk-ros-pkg/jsk_robot.git -y
-if [[ $ROS_DISTRO =~ ^(indigo|kinetic|melodic)$ ]]; then
-  wstool merge -t . https://raw.githubusercontent.com/jsk-ros-pkg/jsk_robot/master/jsk_fetch_robot/jsk_fetch_user.rosinstall.$ROS_DISTRO
-else
-  echo "Your ROS distribution $ROS_DISTRO is not supported."
-fi
+wstool merge -t . https://raw.githubusercontent.com/jsk-ros-pkg/jsk_robot/master/jsk_fetch_robot/jsk_fetch_user.rosinstall.$ROS_DISTRO
 wstool update -t .
+# To use eus10, furuschev script is required.
+wget https://raw.githubusercontent.com/jsk-ros-pkg/jsk_roseus/master/setup_upstream.sh -O /tmp/setup_upstream.sh
+bash /tmp/setup_upstream.sh -w . -p jsk-ros-pkg/geneus -p euslisp/jskeus
 source /opt/ros/$ROS_DISTRO/setup.bash
 rosdep install -y -r --from-paths . --ignore-src
 cd ../
 catkin build fetcheus jsk_fetch_startup
+source devel/setup.bash
+```
+
+#### Setup Environment (For Robot Internal PC, only for advanced developer)
+
+```bash
+mkdir -p catkin_ws/src
+cd  catkin_ws/src
+wstool init .
+wstool set --git jsk-ros-pkg/jsk_robot https://github.com/knorth55/jsk_robot.git -v fetch15 -y
+wstool update -t .
+wstool merge -t . jsk-ros-pkg/jsk_robot/jsk_fetch_robot/jsk_fetch.rosinstall.$ROS_DISTRO
+wstool update -t .
+source /opt/ros/$ROS_DISTRO/setup.bash
+rosdep install -y -r --from-paths . --ignore-src
+cd ../
+catkin build
 source devel/setup.bash
 ```
 
@@ -99,6 +115,11 @@ It is unable to communicate to the real robot when running the simulation.
 ```bash
 roslaunch fetch_gazebo simulation.launch
 roslaunch fetch_moveit_config move_group.launch
+```
+
+Roseus script can be executed on Gazebo. The whole demo is in `jsk_fetch_gazebo_demo/launch/demo.launch`
+```bash
+roslaunch jsk_fetch_gazebo_demo demo.launch
 ```
 
 ## Fetcheus APIs
@@ -177,6 +198,15 @@ roslaunch fetch_moveit_config move_group.launch
 (send *fetch* :rarm :shoulder-y :joint-angle 75)
 ```
 
+- Servo on and off. Able to choose servo on and off part respectively.
+
+```lisp
+(send *ri* :servo-off) ;; arm, gripper and head servos off
+(send *ri* :servo-off :arm t :gripper nil :head nil) ;; arm servo off
+(send *ri* :servo-on) ;; arm, gripper and head servos on
+(send *ri* :servo-on :arm t :gripper nil :head nil :time 80) ;; arm servo on in 80[msec]
+```
+
 ### Gripper Control
 
 - Grasp object
@@ -230,6 +260,36 @@ coordinates can be made with
 (send *ri* :move-to (make-coords :pos #f(-1000 7000 0) :rpy (float-vector pi/2 0 0)) :frame-id "/map") ;; :retry 1 ;;[mm]
 ```
 
+- Move forward at 0.1[m/s] for 10 seconds (CAUTION, this will move the real robot)
+
+```lisp
+(send *ri* :go-velocity 0.1 0 0 10000)
+```
+
+- Get current position of the real robot
+```lisp
+(send *ri* :state :worldcoords)
+```
+Please see [costmap_2d](http://wiki.ros.org/costmap_2d?distro=melodic), [move_base](http://wiki.ros.org/move_base?distro=melodic), if you would like to understand the self-positioning system in detail.
+
+### Build Map
+
+- Stop jsk_fetch_startup on the supervisor
+
+- Launch slam program
+
+```
+roslaunch jsk_fetch_startup fetch_bringup.launch use_build_map:=true launch_move_base:=false
+```
+
+- You can see built map(`/map`) on Rviz
+
+- Make map_directory and save map
+
+```
+rosrun map_server map_saver -f <map_directory/map_name>
+```
+
 ### Speak
 
 - Use text-to-speech engine to speak text
@@ -237,6 +297,7 @@ coordinates can be made with
 ```lisp
 (send *ri* :speak "hello")
 (send *ri* :speak (format nil "hello, ~A + ~A is ~A" 1 1 (+ 1 1)))
+(send *ri* :speak-jp "こんにちは")
 ```
 
 ## FAQ
@@ -267,6 +328,13 @@ rosrun ps3joy ps3joy.py  # with pushing the center button of the joystick
 ```
 
   You might be forget to `source setup.bash` before you run `roseus`
+
+- Can't control Fetch from joystick
+
+Sometimes, we can't control the robot from joystick even though the joystick seems to be connected via Bluetooth (a red light is illuminated).
+  1. Check to see if there is `/dev/ps3joy`.
+  2. If not, press and hold the center button to disconnect Bluetooth connection.
+  3. Connect joystick to Fetch via USB and press the center button.
 
 Administration
 --------------
