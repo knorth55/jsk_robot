@@ -4,7 +4,7 @@
 (ros::roseus-add-msgs "std_msgs")
 (ros::roseus-add-msgs "sensor_msgs")
 
-(require "package://pr2eus/speak.l")
+(require :speak "package://pr2eus/speak.l")
 
 (if (not (boundp `*initialized-tweet-client*))
   (setq *initialized-tweet-client* nil))
