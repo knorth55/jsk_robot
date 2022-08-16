@@ -150,7 +150,7 @@ plugins:
     type: app_publisher/rostopic_publisher_plugin
     plugin_args:
       stop_topics:
-        - name: "/shutdown"
+        - name: "/save_battery"
           pkg: std_msgs
           type: Empty
           cond:

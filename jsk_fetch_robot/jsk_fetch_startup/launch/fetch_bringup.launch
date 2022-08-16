@@ -25,6 +25,7 @@
   <arg name="network_interface" default="$(optenv NETWORK_DEFAULT_WIFI_INTERFACE wlan0)" />
 
   <arg name="battery_warning" default="true" />
+  <arg name="save_battery" default="true" />
   <arg name="nav_speak" default="true" />
   <arg name="fetch_tweet" default="true" />
   <arg name="fetch_switchbot" default="true" />
@@ -52,6 +53,8 @@
       volume: 1.0
     </rosparam>
   </node>
+
+  <node pkg="jsk_fetch_startup" name="save_battery" type="save_battery.py" if="$(arg save_battery)"/>
 
   <node pkg="jsk_robot_startup" name="nav_speak" type="nav_speak.py" respawn="true" if="$(arg nav_speak)">
     <rosparam>
