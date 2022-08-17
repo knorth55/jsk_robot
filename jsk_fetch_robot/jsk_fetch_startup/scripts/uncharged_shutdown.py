@@ -8,16 +8,16 @@ class UnchargedShutdown(object):
 
     def __init__(self):
         rospy.loginfo('Start uncharged_shutdown node.')
-        self.timeout = 1
         self.subscriber = rospy.Subscriber('/shutdown_unchecked', Empty, self.uncharged_shutdown)
         self.shutdown_pub = rospy.Publisher('/shutdown', Empty, queue_size=1)
 
     def uncharged_shutdown(self, msg):
         try:
-            state = rospy.wait_for_message('/battery_state', BatteryState, timeout=self.timeout)
+            state = rospy.wait_for_message('/battery_state', BatteryState, timeout=2)
             if state.is_charging:
                 return
-        except:
+        except rospy.ROSException as e:
+            rospy.logerr("Timeout while waiting for /battery_state")
             pass
         self.shutdown_pub.publish(Empty())
 
