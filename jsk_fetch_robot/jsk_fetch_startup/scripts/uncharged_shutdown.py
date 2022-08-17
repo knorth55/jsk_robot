@@ -4,15 +4,15 @@ import rospy
 from std_msgs.msg import Empty
 from power_msgs.msg import BatteryState
 
-class SaveBattery(object):
+class UnchargedShutdown(object):
 
     def __init__(self):
-        rospy.loginfo('Start save_battery node.')
+        rospy.loginfo('Start uncharged_shutdown node.')
         self.timeout = 1
-        self.subscriber = rospy.Subscriber('/save_battery', Empty, self.save_battery)
+        self.subscriber = rospy.Subscriber('/shutdown_unchecked', Empty, self.uncharged_shutdown)
         self.shutdown_pub = rospy.Publisher('/shutdown', Empty, queue_size=1)
 
-    def save_battery(self, msg):
+    def uncharged_shutdown(self, msg):
         try:
             state = rospy.wait_for_message('/battery_state', BatteryState, timeout=self.timeout)
             if state.is_charging:
@@ -22,6 +22,6 @@ class SaveBattery(object):
         self.shutdown_pub.publish(Empty())
 
 if __name__ == '__main__':
-    rospy.init_node('save_battery')
-    sb = SaveBattery()
+    rospy.init_node('uncharged_shutdown')
+    us = UnchargedShutdown()
     rospy.spin()
