@@ -3,9 +3,8 @@
 
 import os
 import rospy
-import actionlib
+from sound_play.libsoundplay import SoundClient
 from std_msgs.msg import Empty
-from sound_play.msg import SoundRequestAction, SoundRequestGoal
 
 class Shutdown(object):
     """
@@ -26,26 +25,21 @@ class Shutdown(object):
 
     def __init__(self):
         rospy.loginfo('Start shutdown node.')
-        self.client_jp = actionlib.SimpleActionClient('/robotsound_jp', SoundRequestAction)
+        self.client_jp = SoundClient(sound_action='/robotsound_jp', blocking=True)
         rospy.Subscriber('shutdown', Empty, self.shutdown)
         rospy.Subscriber('reboot', Empty, self.reboot)
         self.shutdown_command = rospy.get_param(
             '~shutdown_command', '/sbin/shutdown -h now')
         self.reboot_command = rospy.get_param(
             '~reboot_command', '/sbin/shutdown -r now')
+        self.volume = rospy.get_param('~volume', 1.0)
 
     def speak(self, client, speech_text, lang=None):
-        client.wait_for_server(timeout=rospy.Duration(1.0))
-        sound_goal = SoundRequestGoal()
-        sound_goal.sound_request.sound = -3
-        sound_goal.sound_request.command = 1
-        sound_goal.sound_request.volume = 1.0
         if lang is not None:
-            sound_goal.sound_request.arg2 = lang
-        sound_goal.sound_request.arg = speech_text
-        client.send_goal(sound_goal)
-        client.wait_for_result()
-        return client.get_result()
+            client.say(speech_text, voice=lang, volume=self.volume, replace=False)
+        else:
+            client.say(speech_text, volume=self.volume, replace=False)
+        return client.actionclient.get_result()
 
     def shutdown(self, msg):
         rospy.loginfo('Shut down robot.')
