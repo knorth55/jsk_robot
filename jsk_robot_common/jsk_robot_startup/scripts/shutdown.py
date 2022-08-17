@@ -34,16 +34,13 @@ class Shutdown(object):
             '~reboot_command', '/sbin/shutdown -r now')
         self.volume = rospy.get_param('~volume', 1.0)
 
-    def speak(self, client, speech_text, lang=None):
-        if lang is not None:
-            client.say(speech_text, voice=lang, volume=self.volume, replace=False)
-        else:
-            client.say(speech_text, volume=self.volume, replace=False)
+    def speak(self, client, speech_text, lang='jp'):
+        client.say(speech_text, voice=lang, volume=self.volume, replace=False)
         return client.actionclient.get_result()
 
     def shutdown(self, msg):
         rospy.loginfo('Shut down robot.')
-        self.speak(self.client_jp, 'シャットダウンします。', 'jp')
+        self.speak(self.client_jp, 'シャットダウンします。')
         ret = os.system(self.shutdown_command)
         if ret != 0:
             rospy.logerr("Failed to call '$ {}'. Check authentication.".format(
@@ -51,7 +48,7 @@ class Shutdown(object):
 
     def reboot(self, msg):
         rospy.loginfo('Reboot robot.')
-        self.speak(self.client_jp, '再起動します。', 'jp')
+        self.speak(self.client_jp, '再起動します。')
         ret = os.system(self.reboot_command)
         if ret != 0:
             rospy.logerr("Failed to call '$ {}'. Check authentication.".format(
