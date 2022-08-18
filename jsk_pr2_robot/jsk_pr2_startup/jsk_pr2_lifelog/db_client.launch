@@ -3,6 +3,10 @@
   <arg name="map_frame" default="eng2" />
   <arg name="visualize_log" default="false" />
   <arg name="twitter" default="true" />
+  <arg name="worktime_enable" default="true"/>
+  <arg name="uptime_enable" default="true"/>
+  <arg name="tablet_enable" default="true"/>
+  <arg name="warning_enable" default="true"/>
   <arg name="machine" default="c2" />
   <arg name="output" default="screen" />
 
@@ -55,7 +59,12 @@
 
   <!-- tweeting robot warning data and etc. -->
   <include file="$(find jsk_pr2_startup)/jsk_pr2_lifelog/pr2_tweet.launch"
-           if="$(arg twitter)"/>
+           if="$(arg twitter)">
+    <arg name="worktime_enable" value="$(arg worktime_enable)"/>
+    <arg name="uptime_enable" value="$(arg uptime_enable)"/>
+    <arg name="tablet_enable" value="$(arg tablet_enable)"/>
+    <arg name="warning_enable" value="$(arg warning_enable)"/>
+  </include>
 
   <!-- visualization of database -->
   <include file="$(find jsk_pr2_startup)/jsk_pr2_lifelog/visualization/pr2_log_visualization.launch"

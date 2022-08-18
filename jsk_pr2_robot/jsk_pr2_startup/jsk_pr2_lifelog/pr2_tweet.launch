@@ -1,8 +1,17 @@
 <launch>
+  <arg name="worktime_enable" default="true"/>
+  <arg name="uptime_enable" default="true"/>
+  <arg name="tablet_enable" default="true"/>
+  <arg name="warning_enable" default="true"/>
+
   <include file="$(find pr2_machine)/$(env ROBOT).machine" />
 
   <include file="$(find jsk_robot_startup)/lifelog/tweet.launch">
     <arg name="robot_name" value="PR2"/>
+    <arg name="worktime_enable" value="$(arg worktime_enable)"/>
+    <arg name="uptime_enable" value="$(arg uptime_enable)"/>
+    <arg name="tablet_enable" value="$(arg tablet_enable)"/>
+    <arg name="warning_enable" value="$(arg warning_enable)"/>
     <arg name="image_topics" default="/edgetpu_human_pose_estimator/output/image" />
 
     <arg name="machine" value="c2"/>
