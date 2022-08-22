@@ -10,7 +10,19 @@ endif()
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  tf
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
+  tf2_eigen
+  tf2_msgs
+)
+find_package(Boost REQUIRED COMPONENTS)
 
 ###################################
 ## catkin specific configuration ##
@@ -19,6 +31,18 @@ catkin_package()
 
 catkin_add_env_hooks(99.jsk_fetch_startup SHELLS bash zsh sh
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+
+###########
+## Build ##
+###########
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+)
+add_executable(trashbins_pose_estimator src/trashbins_pose_estimator.cpp)
+target_link_libraries(trashbins_pose_estimator
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -51,9 +75,25 @@ macro(configure_icon_files icol iname)
   endif()
 endmacro(configure_icon_files)
 
+macro(configure_dialogflow_hotword_yaml dname)
+  set(FETCH_NAME ${dname})
+  if (${FETCH_NAME} STREQUAL "fetch15")
+    set(ROBOT_NICKNAME_KANA "ヘンゼル")
+    set(ROBOT_NICKNAME_HIRA "へんぜる")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/dialogflow_hotword.yaml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/config/${FETCH_NAME}_dialogflow_hotword.yaml)
+  elseif (${FETCH_NAME} STREQUAL "fetch1075")
+    set(ROBOT_NICKNAME_KANA "グレーテル")
+    set(ROBOT_NICKNAME_HIRA "ぐれーてる")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config/dialogflow_hotword.yaml.in
+                   ${CMAKE_CURRENT_SOURCE_DIR}/config/${FETCH_NAME}_dialogflow_hotword.yaml)
+  endif()
+endmacro(configure_dialogflow_hotword_yaml)
+
 configure_icon_files(blue fetch15)
 configure_icon_files(red fetch1075)
-
+configure_dialogflow_hotword_yaml(fetch15)
+configure_dialogflow_hotword_yaml(fetch1075)
 
 #############
 ## Testing ##
@@ -64,7 +104,17 @@ if(CATKIN_ENABLE_TESTING)
   # https://github.com/ros/ros_comm/pull/998 respect if/unless for roslaunch-check (1.13.1)
   # https://github.com/ros/ros_comm/pull/1455 make roslaunch-check respect arg remappings with command line argument (1.14.4)
   set(roslaunch_check_script ${PROJECT_SOURCE_DIR}/scripts/roslaunch-check)
-  roslaunch_add_file_check(launch/fetch_bringup.launch launch_teleop:=false) # disable launch_teleop because fetch_auto_dock package exists only in the fetch's PC
+  # test fetch_bringup.launch only in indigo, melodic and above, because kinetic fetch is not released.
+  # disable launch_insta360 because jsk_perception with insta360 launch is not released yet.
+  if("$ENV{ROS_DISTRO}" STREQUAL "indigo")
+    # disable launch_teleop because fetch_auto_dock package exists only in the fetch's PC
+    roslaunch_add_file_check(launch/fetch_bringup.launch launch_teleop:=false launch_insta360:=false)
+  elseif("$ENV{ROS_DISTRO}" STRGREATER "kinetic")
+    # xacro parser error in kinetic and below
+    # xacro tries finding /etc/$ROS_DISTRO/calibrated_latest.urdf even if use_fetch_description is true.
+    roslaunch_add_file_check(launch/fetch.launch use_fetch_description:=true)
+    roslaunch_add_file_check(launch/fetch_bringup.launch launch_insta360:=false)
+  endif()
   roslaunch_add_file_check(launch/rviz.launch)
   roslaunch_add_file_check(launch/fetch_gazebo_bringup.launch)
   set(roslaunch_check_script ${roslaunch_DIR}/../scripts/roslaunch-check)

@@ -1,14 +1,40 @@
 <launch>
-  <arg name="launch_moveit" default="true" />
+  <arg name="hostname" default="fetch15" />
   <arg name="launch_teleop" default="true" />
   <arg name="launch_move_base" default="true" />
   <arg name="launch_sound_play" default="true" />
-  <arg name="boot_sound" default="false" />
+  <arg name="launch_insta360" default="true" />
+  <arg name="launch_app_scheduler" default="true" />
+  <arg name="launch_dialogflow" default="true" />
+  <arg name="launch_google_chat" default="true" />
+  <arg name="launch_gdrive_server" default="true" />
+  <arg name="launch_edgetpu_human_pose_estimator" default="true" />
+  <arg name="launch_edgetpu_object_detector" default="true" />
+
+  <arg name="use_voice_text" default="false" />
+  <arg name="default_speaker" default="$(optenv DEFAULT_SPEAKER 2)" />
+  <arg name="default_english_speaker" default="$(optenv DEFAULT_ENGLISH_SPEAKER kal)" />
+  <arg name="default_warning_speaker" default="$(optenv DEFAULT_ENGLISH_SPEAKER kal)" />
+  <arg name="fetch_lifelog" default="true" />
+  <arg name="boot_sound" default="true" />
   <arg name="map_frame" default="eng2" />
   <arg name="map_file" default="$(find jsk_maps)/raw_maps/eng2-7f-0.05.yaml"/>
   <arg name="keepout_map_file" default="$(find jsk_maps)/raw_maps/eng2-7f-0.05_keepout.yaml" />
   <arg name="use_build_map" default="false" />
   <arg name="use_keepout" default="true" />
+  <arg name="fetch_switchbot" default="true" />
+  <arg name="network_interface" default="$(optenv NETWORK_DEFAULT_WIFI_INTERFACE wlan0)" />
+
+  <arg name="battery_warning" default="true" />
+  <arg name="nav_speak" default="true" />
+  <arg name="fetch_tweet" default="true" />
+  <arg name="rwt_image_view" default="true" />
+  <arg name="fetch_sensors" default="true" />
+  <arg name="use_safe_teleop" default="true" />
+  <arg name="network_detector" default="true" />
+  <arg name="network_status" default="true" />
+  <arg name="use_speech_recognition" default="true" />
+  <arg name="use_audible_warning" default="true" />
 
   <param name="robot/type" value="fetch" />
   <param name="robot/name" command='bash -c "hostname | xargs echo -n"' />
@@ -17,16 +43,20 @@
 
   <!-- add jsk startups -->
   <node pkg="jsk_fetch_startup" name="battery_warning" type="battery_warning.py"
-        respawn="true" output="screen">
+        respawn="true" output="screen" if="$(arg battery_warning)">
     <rosparam>
       duration: 180
-      charge_level_threshold: 40.0
+      charge_level_threshold: 65.0
+      shutdown_level_threshold: 60.0
       charge_level_step: 10.0
       volume: 1.0
     </rosparam>
   </node>
 
-  <node pkg="jsk_robot_startup" name="nav_speak" type="nav_speak.py" respawn="true" >
+  <include file="$(find jsk_fetch_startup)/launch/fetch_shutdown.launch" >
+  </include>
+
+  <node pkg="jsk_robot_startup" name="nav_speak" type="nav_speak.py" respawn="true" if="$(arg nav_speak)">
     <rosparam>
       lang: japanese
       volume: 0.5
@@ -34,6 +64,7 @@
   </node>
   <node if="$(arg boot_sound)" pkg="jsk_robot_startup" name="boot_sound" type="boot_sound.py" >
     <param name="wav_file" value="$(find jsk_fetch_startup)/data/boot_sound.wav" />
+    <param name="preferred_interface" value="$(arg network_interface)" />
   </node>
 
   <!-- look at human for Fetch -->
@@ -42,16 +73,28 @@
     <remap from="~input/people_pose_array" to="/edgetpu_human_pose_estimator/output/poses"/>
   </node>
 
+  <!-- insta360 air images -->
+  <include file="$(find jsk_fetch_startup)/launch/fetch_insta360_$(env ROS_DISTRO).launch"
+           if="$(arg launch_insta360)" />
+
   <!-- english speach node -->
   <!-- disable sound_play in julius.launch and place it in fetch_bringup.launch -->
   <!-- see: https://github.com/jsk-ros-pkg/jsk_robot/pull/1140 -->
   <node name="sound_play" pkg="sound_play" type="soundplay_node.py"
-        respawn="true" if="$(arg launch_sound_play)" />
+        respawn="true" if="$(arg launch_sound_play)">
+    <rosparam subst_value="true" >
+      default_voice: $(arg default_english_speaker)
+      plugin: sound_play/flite_plugin
+    </rosparam>
+  </node>
 
   <!-- japanese speech node -->
-  <include file="$(find voice_text)/launch/voice_text.launch">
+  <include if="$(arg use_voice_text)" file="$(find voice_text)/launch/voice_text.launch">
     <arg name="launch_sound_play" value="$(arg launch_sound_play)" />
     <arg name="sound_play_respawn" value="true" />
+  </include>
+  <include unless="$(arg use_voice_text)" file="$(find voicevox)/launch/voicevox_texttospeech.launch">
+    <arg name="default_speaker" value="$(arg default_speaker)" />
   </include>
 
   <!-- Buffer Server -->
@@ -60,14 +103,15 @@
   </node>
 
   <!-- logging -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_lifelog.xml">
+  <include file="$(find jsk_fetch_startup)/launch/fetch_lifelog.xml" if="$(arg fetch_lifelog)">
     <arg name="map_frame" value="$(arg map_frame)" />
     <arg name="vital_check" value="false" />
   </include>
 
   <!-- diagnostic aggregator -->
   <node pkg="diagnostic_aggregator" type="aggregator_node"
-        name="diag_agg" args="CPP" output="screen" >
+        name="diag_agg" args="CPP" output="screen"
+        clear_params="true" >
     <rosparam command="load" file="$(find jsk_fetch_startup)/config/fetch_analyzers.yaml" />
   </node>
 
@@ -82,7 +126,12 @@
   </node>
 
   <!-- twitter -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" />
+  <include file="$(find jsk_fetch_startup)/launch/fetch_tweet.launch" if="$(arg fetch_tweet)"/>
+
+  <!-- switchbot -->
+  <include file="$(find switchbot_ros)/launch/switchbot.launch" if="$(arg fetch_switchbot)">
+    <arg name="token" value="/var/lib/robot/switchbot_token.txt" />
+  </include>
 
   <!-- app manager -->
   <include file="$(find jsk_robot_startup)/lifelog/app_manager.launch">
@@ -90,75 +139,116 @@
     <arg name="respawn" value="false" />
     <arg name="basic" value="true" />
     <arg name="basic_yaml" value="/var/lib/robot/roswww_basic_keys.yaml" />
+    <arg name="sigint_timeout" value="120.0" />
+  </include>
+
+  <!-- app scheduler -->
+  <include if="$(arg launch_app_scheduler)"
+           file="$(find app_scheduler)/launch/app_scheduler.launch">
+    <arg name="yaml_path" value="/var/lib/robot/app_schedule.yaml" />
+  </include>
+
+  <!-- dialogflow task executive -->
+  <include if="$(arg launch_dialogflow)"
+           file="$(find jsk_fetch_startup)/launch/fetch_dialogflow_task_executive.launch">
+    <arg name="run_app_manager" value="false" />
+    <!-- arg name="webhook_server" value="true" / -->
+    <arg name="hostname" value="$(arg hostname)" />
+  </include>
+
+  <!-- google chat -->
+  <include if="$(arg launch_google_chat)"
+           file="$(find google_chat_ros)/launch/google_chat.launch">
+    <arg name="use_yaml" value="true" />
+    <arg name="receiving_mode" value="url" />
+    <arg name="yaml_file" value="/var/lib/robot/google_chat.yaml" />
+    <arg name="gdrive_upload_service" value="/gdrive_server/upload" />
+    <arg name="to_dialogflow_client" value="true" />
+  </include>
+
+  <!-- gdrive_ros -->
+  <include if="$(arg launch_gdrive_server)"
+           file="$(find gdrive_ros)/launch/gdrive_server.launch">
+    <arg name="settings_yaml" value="/var/lib/robot/gdrive/fetch_pydrive_settings.yaml" />
+    <arg name="respawn" value="true" />
+  </include>
+
+  <!-- coral edgetpu -->
+  <include file="$(find jsk_fetch_startup)/launch/fetch_coral.launch">
+    <arg name="launch_edgetpu_human_pose_estimator" value="$(arg launch_edgetpu_human_pose_estimator)" />
+    <arg name="launch_edgetpu_object_detector" value="$(arg launch_edgetpu_object_detector)" />
+    <arg name="input_image" value="/head_camera/rgb/image_rect_color" />
+    <arg name="input_panorama_image" value="/dual_fisheye_to_panorama/quater/output" />
+  </include>
+
+  <!-- rwt_image_view -->
+  <include file="$(find jsk_robot_startup)/lifelog/rwt_image_view.launch" if="$(arg rwt_image_view)">
+    <arg name="launch_roswww" value="false" />
+    <arg name="launch_websocket" value="false" />
   </include>
 
   <!-- downsample / throttle sensor data -->
-  <include file="$(find jsk_fetch_startup)/launch/fetch_sensors.xml" >
+  <include file="$(find jsk_fetch_startup)/launch/fetch_sensors.xml" if="$(arg fetch_sensors)">
     <arg name="launch_manager" value="false"/>
   </include>
-
-  <!-- include fetch moveit -->
-  <include file="$(find fetch_moveit_config)/launch/move_group.launch"
-           if="$(arg launch_moveit)" />
-  <!-- overwrite fetch.srdf -->
-  <!-- The semantic description that corresponds to the URDF -->
-  <param name="robot_description_semantic"
-         command="rosrun xacro xacro --inorder $(find jsk_fetch_startup)/launch/moveit/fetch.srdf.xacro" />
 
   <!-- teleop -->
   <include file="$(find jsk_fetch_startup)/launch/fetch_teleop.xml"
            if="$(arg launch_teleop)" >
-      <arg name="odom_topic" value="/odom_combined" />
+    <arg name="use_safe_teleop" value="$(arg use_safe_teleop)" />
+    <arg name="odom_topic" value="/odom_combined" />
   </include>
 
   <!-- network status -->
-  <node pkg="jsk_network_tools" type="network_status.py" name="network_status" />
+  <node pkg="jsk_network_tools" type="network_status.py" name="network_status" if="$(arg network_status)"/>
   <!-- network detector -->
-  <node pkg="pr2_computer_monitor" type="network_detector" name="network_detector">
+  <node pkg="pr2_computer_monitor" type="network_detector" name="network_detector" if="$(arg network_detector)">
     <rosparam>
       interface_name: wlan0
     </rosparam>
   </node>
 
   <!-- speech recognition -->
-  <node name="respeaker_transformer" pkg="tf" type="static_transform_publisher"
-        args="0 0 0.1 0 0 0 head_pan_link respeaker_base 100"/>
-  <!-- disable sound_play in julius.launch and place it in fetch_bringup.launch -->
-  <!-- see: https://github.com/jsk-ros-pkg/jsk_robot/pull/1140 -->
-  <include file="$(find julius_ros)/launch/julius.launch">
-    <arg name="launch_audio_capture" value="false"/>
-    <arg name="launch_sound_play" value="false"/>
-    <arg name="speech_to_text_topic" value="speech_to_text_julius"/>
-  </include>
-  <include file="$(find respeaker_ros)/launch/sample_respeaker.launch">
-    <arg name="publish_tf" default="false"/>
-    <arg name="launch_soundplay" default="false"/>
-    <arg name="audio" value="speech_audio"/>
-    <arg name="speech_to_text" value="speech_to_text_google"/>
-    <arg name="language" value="ja-JP"/>
-  </include>
-  <!-- set fetch speak action server names -->
-  <!-- this parameter is for speech_to_text node in respeaker_ros -->
-  <!-- https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/168 -->
-  <group ns="speech_to_text">
-    <rosparam>
-       tts_action_names:
-         - sound_play
-         - robotsound_jp
-    </rosparam>
+  <group if="$(arg use_speech_recognition)">
+    <node name="respeaker_transformer" pkg="tf" type="static_transform_publisher"
+          args="0 0 0.1 0 0 0 head_pan_link respeaker_base 100"/>
+    <!-- disable sound_play in julius.launch and place it in fetch_bringup.launch -->
+    <!-- see: https://github.com/jsk-ros-pkg/jsk_robot/pull/1140 -->
+    <include file="$(find julius_ros)/launch/julius.launch">
+      <arg name="launch_audio_capture" value="false"/>
+      <arg name="launch_sound_play" value="false"/>
+      <arg name="speech_to_text_topic" value="speech_to_text_julius"/>
+    </include>
+    <include file="$(find respeaker_ros)/launch/sample_respeaker.launch">
+      <arg name="publish_tf" default="false"/>
+      <arg name="launch_soundplay" default="false"/>
+      <arg name="audio" value="speech_audio"/>
+      <arg name="speech_to_text" value="speech_to_text_google"/>
+      <arg name="language" value="ja-JP"/>
+    </include>
+    <!-- set fetch speak action server names -->
+    <!-- this parameter is for speech_to_text node in respeaker_ros -->
+    <!-- https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/168 -->
+    <group ns="speech_to_text">
+      <rosparam>
+        tts_action_names:
+        - sound_play
+        - robotsound_jp
+      </rosparam>
+    </group>
+    <!-- select mux for selecting speech_to_text service -->
+    <!-- the mux node is in jsk_3rdparty/dialogflow_task_executive -->
+    <!-- https://github.com/jsk-ros-pkg/jsk_3rdparty/tree/master/dialogflow_task_executive -->
+    <node name="speech_to_text_selector" pkg="jsk_robot_startup" type="mux_selector.py"
+          respawn="true"
+          args="/network/connected 'm.data==False' /speech_to_text_julius">
+      <remap from="mux" to="speech_to_text_mux" />
+      <rosparam>
+        default_select: speech_to_text_google
+        patient: 6
+      </rosparam>
+    </node>
   </group>
-  <!-- select mux for selecting speech_to_text service -->
-  <!-- the mux node is in jsk_3rdparty/dialogflow_task_executive -->
-  <!-- https://github.com/jsk-ros-pkg/jsk_3rdparty/tree/master/dialogflow_task_executive -->
-  <node name="speech_to_text_selector" pkg="jsk_robot_startup" type="mux_selector.py"
-        respawn="true"
-        args="/network/connected 'm.data==False' /speech_to_text_julius">
-    <remap from="mux" to="speech_to_text_mux" />
-    <rosparam>
-      default_select: speech_to_text_google
-      patient: 6
-    </rosparam>
-  </node>
 
   <group if="$(arg launch_move_base)">
     <!-- jsk_maps -->
@@ -168,7 +258,11 @@
     </include>
 
     <!-- dock localization -->
-    <node pkg="jsk_fetch_startup" type="correct_position.py" name="correct_position" respawn="true" />
+    <node pkg="jsk_fetch_startup" type="correct_position.py" name="correct_position" respawn="true">
+      <rosparam>
+        vital_rate: 0.1
+      </rosparam>
+    </node>
 
     <!-- include fetch_navigation -->
     <include file="$(find fetch_navigation)/launch/fetch_nav.launch" unless="$(arg use_build_map)" >
@@ -179,122 +273,50 @@
       <arg name="launch_map_server" value="false" />
       <arg name="odom_topic" value="/odom_combined" />
     </include>
+    <!-- relay plan path topic for visualization -->
+    <node name="relay_navfn_planner_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/NavfnROS/plan /move_base/navigation_plan_viz" />
+    <node name="relay_global_planner_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/GlobalPlanner/plan /move_base/navigation_plan_viz" />
+    <node name="relay_trajectory_planner_global_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/TrajectoryPlannerROS/global_plan /move_base/global_plan_viz" />
+    <node name="relay_trajectory_planner_local_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/TrajectoryPlannerROS/local_plan /move_base/local_plan_viz" />
+    <node name="relay_teb_planner_global_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/TebLocalPlannerROS/global_plan /move_base/global_plan_viz" />
+    <node name="relay_teb_planner_local_plan"
+          pkg="topic_tools" type="relay"
+          args="/move_base/TebLocalPlannerROS/local_plan /move_base/local_plan_viz" />
 
-    <!-- slam for build a map -->
-    <node pkg="slam_karto" type="slam_karto" name="slam_karto"
-          output="screen" if="$(arg use_build_map)" >
-      <remap from="scan" to="base_scan"/>
-    </node>
-
-    <!-- robot localization ukf -->
-    <node pkg="robot_localization" type="ukf_localization_node" name="ukf_se" clear_params="true">
-      <remap from="odometry/filtered" to="/odom_combined" />
-      <rosparam>
-        frequency: 50
-        sensor_timeout: 1.0
-        two_d_mode: true
-        publish_tf: true
-        publish_acceleration: false
-        map_frame: map
-        odom_frame: odom
-        base_link_frame: base_link
-        odom0: /odom_corrected
-        odom0_config: [true, true, false,
-                       false, false, true,
-                       true, true, false,
-                       false, false, true,
-                       false, false, false]
-        odom0_nodelay: true
-        odom0_differential: true
-        imu0: /imu_corrected
-        imu0_config: [false, false, false,
-                      false, false, false,
-                      false, false, false,
-                      false, false, true,
-                      true, true, false]
-        imu0_nodelay: true
-        imu0_differential: true
-        imu0_remove_gravitational_acceleration: true
-      </rosparam>
-    </node>
-
-    <rosparam ns="amcl">
-      update_min_a: 0.01 <!-- update filter every 0.01[m] translation -->
-      update_min_d: 0.01 <!-- update filter every 0.01[rad] rotation -->
-      odom_alpha1: 0.2  # rotation noise per rotation
-      odom_alpha2: 0.2  # rotation noise per translation
-      odom_alpha3: 0.2  # translation noise per translation
-      odom_alpha4: 0.2  # translation noise per rotation
-    </rosparam>
-
-    <rosparam ns="move_base">
-      controller_frequency: 10.0
-    </rosparam>
-
-    <rosparam ns="move_base/global_costmap">
-      inflater:
-        inflation_radius: 0.7 # 0.7
-        cost_scaling_factor: 5.0 # 10.0
-      obstacles:
-        min_obstacle_height: 0.05
-      footprint_padding: 0.05
-    </rosparam>
-    <rosparam ns="move_base/local_costmap">
-      inflater:
-        inflation_radius: 0.7 # 0.7
-        cost_scaling_factor: 5.0 # 25.0 default 10, increasing factor decrease the cost value
-      obstacles:
-        min_obstacle_height: 0.05
-      # default 5 (http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide)
-      update_frequency: 10.0
-      footprint_padding: 0.05
-    </rosparam>
-    <rosparam ns="move_base">
-      base_local_planner: base_local_planner/TrajectoryPlannerROS
-      TrajectoryPlannerROS:
-        min_in_place_vel_theta: 1.0
-        escape_vel: -0.1 # -0.1
-        vx_samples: 10
-        meter_scoring: true
-        pdist_scale: 5.0
-        gdist_scale: 3.2
-        occdist_scale: 0.1
-        dwa: true
-      recovery_behavior_enabled: true
-      recovery_behaviors:
-        - name: "conservative_reset"
-          type: "clear_costmap_recovery/ClearCostmapRecovery"
-        - name: "rotate_recovery"
-          type: "rotate_recovery/RotateRecovery"
-          frequency: 20.0
-          sim_granularity: 0.017
-        - name: "aggressive_reset"
-          type: "clear_costmap_recovery/ClearCostmapRecovery"
-      conservative_reset:
-        reset_distance: 1.0 # 3.0
-      aggressive_reset:
-        reset_distance: 0.2 # 0.5
-      move_slow_and_clear:
-        clearing_distance: 0.5
-        limited_distance: 0.3
-        limited_rot_speed: 0.45
-        limited_trans_speed: 0.25
-        max_trans_param_name: max_vel_x
-        max_rot_param_name: max_vel_theta
-    </rosparam>
+    <!-- load amcl params -->
+    <rosparam command="load"
+              file="$(find jsk_fetch_startup)/launch/navigation/$(arg hostname)/fetch_amcl_common_params.yaml" />
+    <rosparam command="load"
+              file="$(find jsk_fetch_startup)/launch/navigation/$(arg hostname)/fetch_amcl_$(env ROS_DISTRO)_params.yaml" />
+    <!-- load move_base params -->
+    <rosparam command="load"
+              file="$(find jsk_fetch_startup)/launch/navigation/$(arg hostname)/fetch_move_base_common_params.yaml" />
+    <rosparam command="load"
+              file="$(find jsk_fetch_startup)/launch/navigation/$(arg hostname)/fetch_move_base_$(env ROS_DISTRO)_params.yaml" />
   </group>
 
-  <!-- /imu has no frame_id information and there is no bug fix release in indigo. -->
-  <!-- see https://github.com/fetchrobotics/fetch_ros/issues/70 -->
-  <node name="imu_corrector" pkg="jsk_fetch_startup" type="imu_corrector.py">
-    <remap from="~input" to="/imu" />
-    <remap from="~output" to="/imu_corrected" />
+  <!-- slam for build a map -->
+  <node pkg="slam_karto" type="slam_karto" name="slam_karto"
+        output="screen" if="$(arg use_build_map)" >
+    <remap from="scan" to="base_scan"/>
   </node>
 
-  <!-- /odom has no covariance value. -->
-  <node name="odom_corrector" pkg="jsk_fetch_startup" type="odom_corrector.py">
-    <remap from="~input" to="/odom" />
-    <remap from="~output" to="/odom_corrected" />
+  <!-- check if room light is on -->
+  <node name="check_room_light" pkg="jsk_robot_startup" type="check_room_light.py">
+    <rosparam>
+      luminance_threshold: 70
+    </rosparam>
+    <remap from="~input" to="/head_camera/rgb/image_raw" />
   </node>
 
   <!-- robot_pose_publisher for rwt_nav -->
@@ -302,6 +324,60 @@
     <rosparam>
       map_frame: /map
       base_frame: /base_link
+    </rosparam>
+  </node>
+
+  <!-- Check fetch's boards in a constant period -->
+  <node name="check_board_info" pkg="jsk_fetch_diagnosis" type="check_driver_boards.py" output="screen">
+  </node>
+
+  <!-- send email by rostopic -->
+  <node name="email_topic" pkg="jsk_robot_startup" type="email_topic.py" output="screen">
+    <rosparam>
+      email_info: /var/lib/robot/email_topic.yaml
+    </rosparam>
+  </node>
+
+  <!-- Two robots cannot use one rosserial device at the same time -->
+  <group if="$(eval hostname == 'fetch1075')">
+    <include file="$(find jsk_fetch_startup)/launch/fetch_rosserial.launch" />
+  </group>
+
+  <node name="audible_warning"
+        pkg="jsk_tools" type="audible_warning.py"
+        clear_params="true"
+        output="screen"
+        if="$(arg use_audible_warning)" >
+    <remap from="/robotsound" to="/sound_play" />
+    <rosparam command="load" file="$(find jsk_fetch_startup)/config/warning_blacklist.yaml" />
+    <rosparam subst_value="true">
+      run_stop_topic: robot_state
+      run_stop_condition: "m.runstopped is True"
+      seconds_to_start_speaking: 60
+      speak_interval: 600
+      language: $(arg default_warning_speaker) 
+    </rosparam>
+  </node>
+
+  <group ns="audible_warning" >
+    <!-- tweet with image -->
+    <node name="publish_to_tweet_server"
+          pkg="topic_tools" type="transform"
+          args="/audible_warning/output/original_text
+                /tweet_image_server/tweet/goal
+                rostwitter/TweetActionGoal
+                --wait-for-start
+                'rostwitter.msg.TweetActionGoal(goal=rostwitter.msg.TweetGoal(text=&quot;[Audible warning] &quot; + m.data, image=True, image_topic_name=&quot;/edgetpu_human_pose_estimator/output/image&quot;))'
+                --import rostwitter">
+    </node>
+  </group>
+
+  <!-- Publish /diagnostics based on topics and nodes sanity check -->
+  <node name="sanity_diagnostics" pkg="jsk_tools" type="sanity_diagnostics.py"
+        clear_params="true" >
+    <rosparam command="load" file="$(find jsk_fetch_startup)/config/sanity_targets.yaml" />
+    <rosparam subst_value="true">
+      duration: 60
     </rosparam>
   </node>
 

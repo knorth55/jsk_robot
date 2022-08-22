@@ -4,9 +4,11 @@ project(kinovaeus)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+if($ENV{ROS_DISTRO} STREQUAL "indigo") # indigo requres to add find_pacakge(roseus) to compile roseus message
+  set(ROSEUS_package roseus)
+endif()
 find_package(catkin REQUIRED COMPONENTS
-  roseus
-  euscollada
+  ${ROSEUS_package} # required in indigo
 )
 find_package(kortex_description) # Just in case when description is not released. Avoid compile failing
 
@@ -18,6 +20,15 @@ if(NOT kortex_description_FOUND)
   return()
 endif()
 
+# Just in case when euscollada and collada_urdf_jsk_patch are not released. Avoid compile failing
+foreach(PACKAGE euscollada collada_urdf_jsk_patch)
+  find_package(${PACKAGE})
+  if(NOT ${PACKAGE}_FOUND)
+    message(WARNING "${PACKAGE} is not found, so skip generating eus models.")
+    return()
+  endif()
+endforeach()
+
 
 ###########
 ## Build ##
@@ -27,9 +38,11 @@ if(EXISTS ${kortex_description_SOURCE_PREFIX}/robots)
 else()
   set(_kinova_urdf ${kortex_description_PREFIX}/share/kortex_description/robots)
 endif()
+set(_urdf2collada ${collada_urdf_jsk_patch_PREFIX}/lib/collada_urdf_jsk_patch/urdf_to_collada)
 set(_collada2eus ${euscollada_PREFIX}/lib/euscollada/collada2eus)
 
 message("kinova_urdf: ${_kinova_urdf}")
+message("urdf2collada2: ${_urdf2collada}")
 message("collada2eus: ${_collada2eus}")
 
 # Gen3 robot with robotiq gripper
@@ -39,10 +52,13 @@ foreach(ROBOT_TYPE gen3_lite_gen3_lite_2f gen3_robotiq_2f_85 gen3_robotiq_2f_140
   add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf
     COMMAND xacro ${_kinova_urdf}/${ROBOT_TYPE}.xacro sim:=false > ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf
     DEPENDS ${_kinova_urdf}/${ROBOT_TYPE}.xacro)
+  add_custom_command(OUTPUT ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.dae
+    COMMAND ${_urdf2collada} ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.dae
+    DEPENDS ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf)
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.l
-    COMMAND echo "${_collada2eus} ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf ${ROBOT_TYPE}.l"
-    COMMAND ${_collada2eus} ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.yaml ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.l
-    DEPENDS ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.urdf ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.yaml ${_collada2eus})
+    COMMAND echo "${_collada2eus} ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.dae ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.yaml ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.l"
+    COMMAND ${_collada2eus} ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.dae ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.yaml ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.l
+    DEPENDS ${PROJECT_BINARY_DIR}/${ROBOT_TYPE}.dae ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.yaml ${_collada2eus})
   add_custom_target(compile_${ROBOT_TYPE} ALL DEPENDS ${PROJECT_SOURCE_DIR}/${ROBOT_TYPE}.l)
 endforeach()
 
