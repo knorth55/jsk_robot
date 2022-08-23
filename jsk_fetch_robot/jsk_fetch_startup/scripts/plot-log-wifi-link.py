@@ -89,4 +89,10 @@ if __name__=='__main__':
     axes[2].set_ylabel('noise')
     axes[3].scatter(list_time_unixtime, list_ping)
     axes[3].set_ylabel('ping')
+
+    list_time_xticks = [list_time_unixtime[0], list_time_unixtime[-1]]
+    list_time_xticklabels = [list_time[0], list_time[-1]]
+
+    axes[3].set_xticks(list_time_xticks)
+    axes[3].set_xticklabels(list_time_xticklabels, rotation=15)
     plt.show()
