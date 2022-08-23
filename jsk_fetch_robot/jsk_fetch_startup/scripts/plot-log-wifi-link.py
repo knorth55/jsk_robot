@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from matplotlib import pyplot as plt
 import csv
@@ -10,7 +10,7 @@ from datetime import datetime
 def parse_date(raw_str):
     return datetime.strptime(
             raw_str.split('+')[0],
-            '%Y-%m-%dT%H:%M:%S+09:00'
+            '%Y-%m-%dT%H:%M:%S'
             )
 
 
@@ -22,28 +22,26 @@ def load_csv(csv_file, start_time, end_time):
     list_signal = []
     list_level = []
     list_noise = []
+    list_ping = []
 
     with open(csv_file) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in spamreader:
-            try:
-                row_time = parse_date(row[0])
-                row_ssid = row[1]
-                row_freq = int(row[2].strip('.'))
-                row_signal = int(row[3].strip('.'))
-                row_level = int(row[4].strip('.'))
-                row_noise = int(row[5])
-                row_ping = float(row[6])
+            row_time = parse_date(row[0])
+            row_ssid = row[1]
+            row_freq = int(row[2].strip('.'))
+            row_signal = int(row[3].strip('.'))
+            row_level = int(row[4].strip('.'))
+            row_noise = int(row[5])
+            row_ping = float(row[7])
 
-                list_time.append(row_time)
-                list_ssid.append(row_ssid)
-                list_freq.append(row_freq)
-                list_signal.append(row_signal)
-                list_level.append(row_level)
-                list_noise.append(row_noise)
-                list_ping.append(row_ping)
-            except Error as e:
-                print('got an error {}'.format(e))
+            list_time.append(row_time)
+            list_ssid.append(row_ssid)
+            list_freq.append(row_freq)
+            list_signal.append(row_signal)
+            list_level.append(row_level)
+            list_noise.append(row_noise)
+            list_ping.append(row_ping)
 
     if start_time is not None:
 
@@ -79,7 +77,7 @@ if __name__=='__main__':
 
     args = parser.parse_args()
 
-    list_time, list_ssid, list_freq, list_signal, list_level, list_noise, list_ping = load_csv(args.csv_file)
+    list_time, list_ssid, list_freq, list_signal, list_level, list_noise, list_ping = load_csv(args.csv_file, args.start_time, args.end_time)
     list_time_unixtime = [int(time.mktime(t.timetuple())) for t in list_time]
 
     fig, axes = plt.subplots(4,1,sharex=True)
