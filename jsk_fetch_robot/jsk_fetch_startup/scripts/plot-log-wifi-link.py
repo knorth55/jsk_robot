@@ -27,21 +27,24 @@ def load_csv(csv_file, start_time, end_time):
     with open(csv_file) as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in spamreader:
-            row_time = parse_date(row[0])
-            row_ssid = row[1]
-            row_freq = int(row[2].strip('.'))
-            row_signal = int(row[3].strip('.'))
-            row_level = int(row[4].strip('.'))
-            row_noise = int(row[5])
-            row_ping = float(row[7])
+            try:
+                row_time = parse_date(row[0])
+                row_ssid = row[1]
+                row_freq = int(row[2].strip('.'))
+                row_signal = int(row[3].strip('.'))
+                row_level = int(row[4].strip('.'))
+                row_noise = int(row[5])
+                row_ping = float(row[7])
 
-            list_time.append(row_time)
-            list_ssid.append(row_ssid)
-            list_freq.append(row_freq)
-            list_signal.append(row_signal)
-            list_level.append(row_level)
-            list_noise.append(row_noise)
-            list_ping.append(row_ping)
+                list_time.append(row_time)
+                list_ssid.append(row_ssid)
+                list_freq.append(row_freq)
+                list_signal.append(row_signal)
+                list_level.append(row_level)
+                list_noise.append(row_noise)
+                list_ping.append(row_ping)
+            except ValueError as e:
+                print('Error: {}'.format(e))
 
     if start_time is not None:
 
@@ -74,11 +77,24 @@ if __name__=='__main__':
     parser.add_argument('csv_file')
     parser.add_argument('--start-time', default=None)
     parser.add_argument('--end-time', default=None)
+    parser.add_argument('--num-labels', default=5)
 
     args = parser.parse_args()
 
     list_time, list_ssid, list_freq, list_signal, list_level, list_noise, list_ping = load_csv(args.csv_file, args.start_time, args.end_time)
     list_time_unixtime = [int(time.mktime(t.timetuple())) for t in list_time]
+
+    if args.start_time is not None:
+        start_time = parse_date(start_time)
+    else:
+        start_time = list_time[0]
+    start_time_unixtime = int(time.mktime(start_time.timetuple()))
+
+    if args.end_time is not None:
+        end_time = parse_date(end_time)
+    else:
+        end_time = list_time[-1]
+    end_time_unixtime = int(time.mktime(end_time.timetuple()))
 
     fig, axes = plt.subplots(4,1,sharex=True)
     axes[0].scatter(list_time_unixtime, list_signal)
@@ -89,9 +105,10 @@ if __name__=='__main__':
     axes[2].set_ylabel('noise')
     axes[3].scatter(list_time_unixtime, list_ping)
     axes[3].set_ylabel('ping')
+    axes[3].set_xlim((start_time_unixtime, end_time_unixtime))
 
-    list_time_xticks = [list_time_unixtime[0], list_time_unixtime[-1]]
-    list_time_xticklabels = [list_time[0], list_time[-1]]
+    list_time_xticklabels = [start_time + i * ( (end_time - start_time) / (args.num_labels - 1) ) for i in range(args.num_labels)]
+    list_time_xticks = [int(time.mktime(t.timetuple())) for t in list_time_xticklabels]
 
     axes[3].set_xticks(list_time_xticks)
     axes[3].set_xticklabels(list_time_xticklabels, rotation=15)
