@@ -130,7 +130,7 @@ public:
                     and button_estop_gentle < num_buttons_ ) {
                 if ( msg->buttons[button_estop_gentle] == 1 ) {
                     estop_gentle_cnt += 1;
-                    if ( pressed_[button_estop_gentle] )
+                    if ( !pressed_[button_estop_gentle] )
                     {
                         estop_gentle_toggle_cnt += 1;
                     }
