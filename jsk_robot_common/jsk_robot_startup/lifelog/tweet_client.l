@@ -5,6 +5,7 @@
 (ros::roseus-add-msgs "sensor_msgs")
 
 (load "package://pr2eus/speak.l")
+(require :base64 "lib/llib/base64.l")
 
 (defun tweet-string (twit-str &key (warning-time) (with-image) (image-wait 30) (speak t)
                               (volume 1.0))
@@ -39,29 +40,28 @@
                     :topic-name "robotsound_jp" :wait t :volume volume))
       ;; specify camera
       (when (stringp with-image)
-        (ros::wait-for-service "/tweet_image_mux/list")
+        (ros::wait-for-service "/tweet_compressed_image_mux/list")
         (let ((current-image-list
-               (send (ros::service-call "/tweet_image_mux/list" (instance topic_tools::muxlistrequest :init)) :topics)))
+               (send (ros::service-call "/tweet_compressed_image_mux/list" (instance topic_tools::muxlistrequest :init)) :topics)))
           (unless (find with-image current-image-list :test #'string=)
-            (ros::service-call "/tweet_image_mux/add" (instance topic_tools::muxaddrequest :init :topic with-image)))
+            (ros::service-call "/tweet_compressed_image_mux/add" (instance topic_tools::muxaddrequest :init :topic with-image)))
           (setq prev-image-topic
-                (send (ros::service-call "/tweet_image_mux/select" (instance topic_tools::muxselectrequest :init :topic with-image)) :prev_topic))))
+                (send (ros::service-call "/tweet_compressed_image_mux/select" (instance topic_tools::muxselectrequest :init :topic with-image)) :prev_topic))))
       (unless prev-image-topic
-        (setq prev-image-topic (send (one-shot-subscribe "/tweet_image_mux/selected" std_msgs::String) :data)))
+        (setq prev-image-topic (send (one-shot-subscribe "/tweet_compressed_image_mux/selected" std_msgs::String) :data)))
 
       ;; retrieve image
       ;; (call-empty-service "/tweet_image_saver/save" :wait t)
-      (setq img (one-shot-subscribe "/tweet_image" sensor_msgs::Image :timeout 1000))
+      (setq img (one-shot-subscribe "/tweet_image/compressed" sensor_msgs::CompressedImage :timeout 1000))
       (if img
         (progn
-          (write-image-file "/tmp/tweet_image.jpg" (ros::sensor_msgs/Image->image img))
           (ros::ros-info "tweeting ~A" twit-str)
           (ros::publish "/tweet"
                         (instance std_msgs::String :init
-                                  :data (format nil "~A ~A"
-                                                twit-str (format nil "/tmp/tweet_image.jpg")))))
+                                  :data (format nil "~A\n~A"
+                                                twit-str (remove #\newline (base64encode (send img :serialize)))))))
         (ros::ros-error "fail saving image and tweeting"))
-      (ros::service-call "/tweet_image_mux/select" (instance topic_tools::muxselectrequest :init :topic prev-image-topic)))
+      (ros::service-call "/tweet_compressed_image_mux/select" (instance topic_tools::muxselectrequest :init :topic prev-image-topic)))
     (t
       (ros::publish "/tweet" (instance std_msgs::String :init :data twit-str))))
   (when speak (speak-jp "ついーとしました" :wait t :volume volume))))
